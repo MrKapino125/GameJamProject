@@ -1,15 +1,16 @@
-# This is a sample Python script.
+import pygame
+from sys import exit
 
-# Press Umschalt+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+pygame.init()
+screen = pygame.display.set_mode((800,400))
+pygame.display.set_caption("test")
+clock = pygame.time.Clock()
 
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
 
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    pass
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
-print("hi")
-print("wowzers")
+    pygame.display.update()
+    clock.tick(60)
