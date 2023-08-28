@@ -64,8 +64,15 @@ class Eventhandler:
                 self.mousePos = event.pos
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    self.is_clicked["left"]
+                    self.is_clicked["left"] = True
                 if event.button == 2:
-                    self.is_clicked["middle"]
+                    self.is_clicked["middle"] = True
                 if event.button == 3:
-                    self.is_clicked["right"]
+                    self.is_clicked["right"] = True
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    self.is_clicked["left"] = False
+                if event.button == 2:
+                    self.is_clicked["middle"] = False
+                if event.button == 3:
+                    self.is_clicked["right"] = False

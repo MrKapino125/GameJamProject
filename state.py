@@ -1,4 +1,5 @@
 import pygame
+import math
 
 class State:
     def __init__(self):
@@ -8,6 +9,7 @@ class State:
         pass
     def render(self, screen):
         pass
+
 
 class MenuState(State):
     def __init__(self, screen):
@@ -28,21 +30,21 @@ class MenuState(State):
         if eventHandler.is_clicked["left"] and not self.left_lock:
             mousePos = eventHandler.mousePos
             width = self.screen.get_width()
-            self.left_lock = True
             print(abs((mousePos[1] - 750) / (mousePos[0] - 3.5 * width / 10)))
             print(mousePos)
-            if abs((mousePos[1] - 750) / (mousePos[0] - 3.5 * width / 10)) < self.green_size:
+            if abs(math.sqrt((mousePos[1] - 750)**2 + (mousePos[0] - 3.5 * width / 10)**2)) < self.green_size:
                 self.green_size = 65
                 self.yellow_size = 50
                 self.red_size = 50
-            elif abs((mousePos[1] - 750) / (mousePos[0] - 5 * width / 10)) < self.yellow_size:
+            elif abs(math.sqrt((mousePos[1] - 750)**2 + (mousePos[0] - 5 * width / 10)**2)) < self.yellow_size:
                 self.green_size = 50
                 self.yellow_size = 65
                 self.red_size = 50
-            if abs((mousePos[1] - 750) / (mousePos[0] - 6.5 * width / 10)) < self.red_size:
+            if abs(math.sqrt((mousePos[1] - 750)**2 + (mousePos[0] - 6.5 * width / 10)**2)) < self.red_size:
                 self.green_size = 50
                 self.yellow_size = 50
                 self.red_size = 65
+            self.left_lock = True
         if not eventHandler.is_clicked["left"]:
             self.left_lock = False
 
