@@ -1,8 +1,9 @@
 import pygame
+import card
 from sys import exit
 
 pygame.init()
-screen = pygame.display.set_mode((800, 800))
+screen = pygame.display.set_mode((1600, 900))
 pygame.display.set_caption("test")
 clock = pygame.time.Clock()
 surface1 = pygame.Surface((150, 150))
@@ -13,7 +14,20 @@ surface3 = pygame.Surface((150, 150))
 surface3.fill("Yellow")
 surface4 = pygame.Surface((150, 150))
 surface4.fill("Green")
-surface5 = pygame.image.load("res/matthias_pb.png")
+clickcard = card.clickCard()
+
+cards = [clickcard]
+
+def tick():
+    pass
+
+def render(screen):
+    screen.blit(surface1, (50, 50))
+    screen.blit(surface2, (250, 50))
+    screen.blit(surface3, (50, 250))
+    screen.blit(surface4, (250, 250))
+
+    cards[0].render(screen)
 
 while True:
     for event in pygame.event.get():
@@ -21,11 +35,8 @@ while True:
             pygame.quit()
             exit()
 
-    screen.blit(surface1, (50, 50))
-    screen.blit(surface2, (250, 50))
-    screen.blit(surface3, (50, 250))
-    screen.blit(surface4, (250, 250))
-    screen.blit(surface5, (0, 0))
+    tick()
+    render(screen)
 
     pygame.display.update()
     clock.tick(60)
