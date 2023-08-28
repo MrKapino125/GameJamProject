@@ -28,6 +28,7 @@ class MenuState(State):
         if eventHandler.is_clicked["left"] and not self.left_lock:
             mousePos = eventHandler.mousePos
             width = self.screen.get_width()
+            self.left_lock = True
             print(abs((mousePos[1] - 750) / (mousePos[0] - 3.5 * width / 10)))
             print(mousePos)
             if abs((mousePos[1] - 750) / (mousePos[0] - 3.5 * width / 10)) < self.green_size:
@@ -42,7 +43,6 @@ class MenuState(State):
                 self.green_size = 50
                 self.yellow_size = 50
                 self.red_size = 65
-            self.left_lock = True
         if not eventHandler.is_clicked["left"]:
             self.left_lock = False
 
