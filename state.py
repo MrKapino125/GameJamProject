@@ -46,7 +46,7 @@ class MenuState(State):
                 self.green_size = 50
                 self.yellow_size = 50
                 self.red_size = 65
-            play_pos = (width / 2 - self.play_width / 2, height / 2 - self.play_height / 2)
+            play_pos = (width / 2 - self.play_width / 2, 11 * height / 20 - self.play_height / 2)
             if mousePos[0] > play_pos[0] and mousePos[0] < play_pos[0] + self.play_width and mousePos[1] > play_pos[1] and mousePos[1] < play_pos[1] + self.play_height:
                 return states[1]
             self.left_lock = True
@@ -65,7 +65,7 @@ class MenuState(State):
         pygame.draw.circle(screen, (236, 193, 94), (6.5 * width / 10, 750), self.red_size + 10)
         pygame.draw.circle(screen, "Red", (6.5 * width / 10, 750), self.red_size)
 
-        play_pos = (width / 2 - self.play_width / 2, height / 2 - self.play_height / 2)
+        play_pos = (width / 2 - self.play_width / 2, 11 * height / 20 - self.play_height / 2)
         #pygame.draw.polygon(play_button, "Green", [(100, 75), (100, 225), (200, 150)])
         screen.blit(self.play_button, (play_pos))
 

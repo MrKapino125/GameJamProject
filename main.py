@@ -24,6 +24,7 @@ cards = [clickcard]
 states = [state.MenuState(screen), state.GameState()]
 currentState = states[0]
 eventHandler = eventhandler.Eventhandler()
+background = pygame.image.load("res/gdbackground4.png")
 
 
 def tick():
@@ -33,8 +34,6 @@ def tick():
     eventHandler.tick()
 
 def render(screen):
-    background = pygame.Surface((1600, 900))
-    background.fill((213,205,237))
     screen.blit(background, (0, 0))
     #pygame.draw.circle(screen, "Red", (600, 750), 50)
     #screen.blit(surface2, (250, 50))
