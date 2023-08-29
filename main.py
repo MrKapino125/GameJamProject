@@ -2,7 +2,6 @@ import pygame
 import card
 import state
 import eventhandler
-from sys import exit
 
 pygame.init()
 width = 1600

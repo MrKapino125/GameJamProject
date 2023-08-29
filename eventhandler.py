@@ -1,5 +1,5 @@
 import pygame
-
+from sys import exit
 
 class Eventhandler:
     def __init__(self):
