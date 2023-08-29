@@ -44,6 +44,8 @@ class Eventhandler:
         self.is_clicked = {"left": False,
                            "right": False,
                            "middle": False}
+        self.is_lockedc = self.is_clicked.copy()
+        self.is_lockedp = self.is_pressed.copy()
     def tick(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

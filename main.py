@@ -21,7 +21,7 @@ surface4.fill("Green")
 clickcard = card.ClickCard(screen)
 
 cards = [clickcard]
-states = [state.MenuState(screen), state.GameState()]
+states = [state.MenuState(screen), state.GameState(screen)]
 currentState = states[0]
 eventHandler = eventhandler.Eventhandler()
 background = pygame.image.load("res/gdbackground4.png")
