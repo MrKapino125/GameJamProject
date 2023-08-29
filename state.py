@@ -20,7 +20,6 @@ class MenuState(State):
         self.green_size = 65
     def tick(self, eventHandler, states):
         if eventHandler.is_pressed["s"] and not self.s_lock:
-            print("eichel")
             self.s_lock = True
         if not eventHandler.is_pressed["s"]:
             self.s_lock = False
@@ -30,8 +29,6 @@ class MenuState(State):
         if eventHandler.is_clicked["left"] and not self.left_lock:
             mousePos = eventHandler.mousePos
             width = self.screen.get_width()
-            print(abs((mousePos[1] - 750) / (mousePos[0] - 3.5 * width / 10)))
-            print(mousePos)
             if abs(math.sqrt((mousePos[1] - 750)**2 + (mousePos[0] - 3.5 * width / 10)**2)) < self.green_size:
                 self.green_size = 65
                 self.yellow_size = 50
@@ -61,7 +58,6 @@ class GameState(State):
 
     def tick(self, eventHandler, states):
         if eventHandler.is_pressed["s"] and not self.s_lock:
-            print("vulva")
             self.s_lock = True
         if not eventHandler.is_pressed["s"]:
             self.s_lock = False
