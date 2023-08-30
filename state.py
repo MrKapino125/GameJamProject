@@ -6,10 +6,33 @@ class State:
     def __init__(self, screen, eventHandler):
         self.screen = screen
         self.eventHandler = eventHandler
-    def tick(self, eventHandler, states):
-        pass
-    def render(self, screen):
-        pass
+
+        self.light = False
+        self.alpha = 0
+        self.color = "Green"
+        self.surface = pygame.Surface((screen.get_width(), screen.get_height()))
+    def tick(self, states):
+        duration = 6
+        if self.light:
+            self.alpha -= 255 / duration
+            if self.alpha < 0:
+                self.alpha = 0
+                self.light = False
+
+    def render(self):
+        if self.light:
+            self.surface.fill(self.color)
+            self.surface.set_alpha(self.alpha)
+            self.screen.blit(self.surface, (0,0))
+
+    def correct(self):
+        self.color = "Green"
+        self.alpha = 255
+        self.light = True
+    def wrong(self):
+        self.color = "Red"
+        self.alpha = 255
+        self.light = True
 
 
 class MenuState(State):
@@ -82,7 +105,6 @@ class MenuState(State):
         pygame.draw.circle(self.screen, self.red_color, (6.5 * width / 10, 750), self.red_size)
 
         play_pos = (width / 2 - self.play_width / 2, 11 * height / 20 - self.play_height / 2)
-        #pygame.draw.polygon(play_button, "Green", [(100, 75), (100, 225), (200, 150)])
         if mousePos[0] > play_pos[0] and mousePos[0] < play_pos[0] + self.play_width and mousePos[1] > play_pos[1] and mousePos[1] < play_pos[1] + self.play_height:
             self.screen.blit(self.play_button_hovered, (play_pos))
         else:
@@ -91,14 +113,48 @@ class MenuState(State):
 class GameState(State):
     def __init__(self, screen, eventHandler):
         super().__init__(screen, eventHandler)
-        self.cardtest = card.ClickCard(screen, eventHandler)
+        self.clickCard = card.ClickCard(screen, eventHandler)
+        self.sliceCard = card.SliceCard(screen, eventHandler)
+        self.cards = [self.sliceCard, self.clickCard]
         self.interface = pygame.image.load("res/interface.png")
 
+        self.cards_left = len(self.cards)
+        self.current_card = self.cards[self.cards_left - 1]
+        self.holding_card = None
+
     def tick(self, states):
+        super().tick(states)
         if self.eventHandler.is_pressed["d"]:
             return states[0]
-        self.cardtest.tick()
+        wincheck = self.current_card.tick()
+
+        if wincheck:
+            self.correct()
+            self.holding_card = self.current_card
+            self.cards_left -= 1
+            self.current_card = self.cards[self.cards_left - 1]
+        elif wincheck == False:
+            self.wrong()
+
+        if self.holding_card is not None:
+            self.holding_card.tick()
+
+        if self.cards_left == 0:
+            return states[2]
         return self
     def render(self):
+        super().render()
         self.screen.blit(self.interface, (250, 37.5/2))
-        self.cardtest.render()
+        self.current_card.render()
+        if self.holding_card is not None:
+            self.holding_card.render()
+
+class EndState(State):
+    def __init__(self, screen, eventHandler):
+        super().__init__(screen, eventHandler)
+
+    def tick(self, states):
+        return self
+    def render(self):
+        self.screen.fill("Green")
+        return self
