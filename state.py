@@ -2,6 +2,9 @@ import pygame
 import math
 import card
 
+import timer
+timer = timer.Timer()
+
 class State:
     def __init__(self, screen, eventHandler):
         self.screen = screen
@@ -74,6 +77,7 @@ class MenuState(State):
                 self.red_size = 65
             play_pos = (width / 2 - self.play_width / 2, 11 * height / 20 - self.play_height / 2)
             if mousePos[0] > play_pos[0] and mousePos[0] < play_pos[0] + self.play_width and mousePos[1] > play_pos[1] and mousePos[1] < play_pos[1] + self.play_height:
+                timer.start()
                 return states[1]
         if not self.eventHandler.is_clicked["left"]:
             self.eventHandler.is_lockedc["left"] = False
@@ -115,15 +119,19 @@ class GameState(State):
         super().__init__(screen, eventHandler)
         self.clickCard = card.ClickCard(screen, eventHandler)
         self.sliceCard = card.SliceCard(screen, eventHandler)
-        self.cards = [self.sliceCard, self.clickCard]
+        self.mathCard = card.MathCard(screen, eventHandler)
+        self.cards = [self.mathCard, self.sliceCard, self.clickCard]
         self.interface = pygame.image.load("res/interface.png")
 
         self.cards_left = len(self.cards)
         self.current_card = self.cards[self.cards_left - 1]
         self.holding_card = None
 
+        pygame.font.init()
+
     def tick(self, states):
         super().tick(states)
+        timer.tick()
         if self.eventHandler.is_pressed["d"]:
             return states[0]
         wincheck = self.current_card.tick()
@@ -144,8 +152,15 @@ class GameState(State):
         return self
     def render(self):
         super().render()
+        time = timer.time + 990
+        if time > 1000:
+            time = str(int(time))
+        else:
+            time = str(int(time * 10) / 10)
+        text = pygame.font.SysFont("segoescript", 75).render(time, True, "Red")
         self.screen.blit(self.interface, (250, 37.5/2))
         self.current_card.render()
+        self.screen.blit(text, (400, 75))
         if self.holding_card is not None:
             self.holding_card.render()
 

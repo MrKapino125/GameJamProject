@@ -3,6 +3,7 @@ import card
 import state
 import eventhandler
 import time
+import timer
 
 pygame.init()
 width = 1600
@@ -16,9 +17,6 @@ states = [state.MenuState(screen, eventHandler), state.GameState(screen, eventHa
 currentState = states[0]
 background = pygame.image.load("res/gdbackground4.png")
 
-counter = 0
-start = time.time()
-
 def tick():
     global currentState
     global counter
@@ -27,12 +25,6 @@ def tick():
     currentState = currentState.tick(states)
     eventHandler.tick()
 
-    counter += 1
-    deltatime = time.time()
-    if deltatime - start >= 1:
-        print("Fps", counter)
-        start = time.time()
-        counter = 0
 
 def render():
     screen.blit(background, (0, 0))

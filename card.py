@@ -21,7 +21,7 @@ class Card:
                 self.win = False
 
     def render(self):
-        pass
+        self.screen.blit(self.surface, self.pos)
     def done(self):
         self.win = True
         self.end = True
@@ -31,7 +31,7 @@ class ClickCard(Card):
     def __init__(self, screen, eventHandler):
         super().__init__("res/click_card.png", screen, eventHandler)
     def render(self):
-        self.screen.blit(self.surface, self.pos)
+        super().render()
     def tick(self):
         super().tick()
         if self.end:
@@ -40,6 +40,7 @@ class ClickCard(Card):
             self.eventHandler.is_lockedc["left"] = True
 
             mousePos = self.eventHandler.mousePos
+            print(mousePos)
             if mousePos[0] > self.pos[0] and mousePos[0] < self.pos[0] + self.surface_size[0] and mousePos[1] > self.pos[1] and mousePos[1] < self.pos[1] + self.surface_size[1]:
                 self.done()
                 return True
@@ -80,5 +81,29 @@ class SliceCard(Card):
             if self.clicked:
                 self.clicked = False
                 return False
+
     def render(self):
-        self.screen.blit(self.surface, self.pos)
+        super().render()
+
+class MathCard(Card):
+    def __init__(self, screen, eventHandler):
+        super().__init__("res/math_card.png", screen, eventHandler)
+
+    def tick(self):
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+
+            mousePos = self.eventHandler.mousePos
+            if mousePos[1] >= 628 and mousePos[1] <= 752:
+                if mousePos[0] >= 403 and mousePos[0] <= 575:
+                    self.done()
+                    return True
+                if mousePos[0] >= 702 and mousePos[0] <= 876:
+                    return False
+                if mousePos[0] >= 1000 and mousePos[0] <= 1174:
+                    return False
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+
+    def render(self):
+        super().render()
