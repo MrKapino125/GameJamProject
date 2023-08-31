@@ -376,10 +376,19 @@ class NotclickbuttonCard(Card):
 class MessageCard(Card):
     def __init__(self, screen, eventHandler):
         super().__init__("res/message_card.png", screen, eventHandler)
+        self.count = 0
+        self.hint = False
+        self.hintfont = pygame.font.SysFont("segoescript", 30)
+        self.hinttxt = self.hintfont.render("hint: capital letters", True, "Red")
+
     def tick(self):
         super().tick()
         if self.end:
             return
+
+        self.count += 1
+        if self.count >= 1000:
+            self.hint = True
 
         if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
             self.eventHandler.is_lockedc["left"] = True
@@ -397,6 +406,9 @@ class MessageCard(Card):
         super().render(counter)
         if self.end:
             return
+        if self.hint:
+            self.screen.blit(self.hinttxt, (self.pos[0] + self.surface_size[0]/2 - self.hinttxt.get_width()/2, self.pos[1] + self.surface_size[1] - 120))
+
 
 class LabyrinthCard(Card):
     def __init__(self, screen, eventHandler):

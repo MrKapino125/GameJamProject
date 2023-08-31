@@ -120,7 +120,7 @@ class GameState(State):
         self.notclickbuttonCard = card.NotclickbuttonCard(screen, eventHandler)
         self.messageCard = card.MessageCard(screen, eventHandler)
         self.labyrinthCard = card.LabyrinthCard(screen, eventHandler)
-        self.cards = [self.rightCard, self.minefieldCard, self.rememberCard, self.mathCard, self.sliceCard, self.clickCard,  self.impossiblequizCard, self.notclickbuttonCard, self.messageCard, self.labyrinthCard]
+        self.cards = [self.impossiblequizCard, self.rightCard, self.notclickbuttonCard, self.messageCard, self.minefieldCard, self.labyrinthCard, self.rememberCard, self.mathCard, self.sliceCard, self.clickCard]
         self.interface = pygame.image.load("res/interface.png")
 
         self.cards_left = len(self.cards)
