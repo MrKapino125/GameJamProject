@@ -6,6 +6,7 @@ import time
 import timer
 
 pygame.init()
+pygame.font.init()
 width = 1600
 height = 900
 screen = pygame.display.set_mode((width, height))
@@ -19,8 +20,6 @@ background = pygame.image.load("res/gdbackground4.png")
 
 def tick():
     global currentState
-    global counter
-    global start
 
     currentState = currentState.tick(states)
     eventHandler.tick()

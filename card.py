@@ -30,8 +30,6 @@ class Card:
 class ClickCard(Card):
     def __init__(self, screen, eventHandler):
         super().__init__("res/click_card.png", screen, eventHandler)
-    def render(self):
-        super().render()
     def tick(self):
         super().tick()
         if self.end:
@@ -46,6 +44,9 @@ class ClickCard(Card):
                 return True
         if not self.eventHandler.is_clicked["left"]:
             self.eventHandler.is_lockedc["left"] = False
+
+    def render(self):
+        super().render()
 
 class SliceCard(Card):
     def __init__(self, screen, eventHandler):

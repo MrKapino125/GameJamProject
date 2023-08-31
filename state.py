@@ -127,8 +127,6 @@ class GameState(State):
         self.current_card = self.cards[self.cards_left - 1]
         self.holding_card = None
 
-        pygame.font.init()
-
     def tick(self, states):
         super().tick(states)
         timer.tick()
@@ -148,19 +146,22 @@ class GameState(State):
             self.holding_card.tick()
 
         if self.cards_left == 0:
+            timer.stop()
             return states[2]
         return self
     def render(self):
         super().render()
-        time = timer.time + 990
+        time = timer.time
         if time > 1000:
             time = str(int(time))
         else:
             time = str(int(time * 10) / 10)
-        text = pygame.font.SysFont("segoescript", 75).render(time, True, "Red")
+        timetxt = pygame.font.SysFont("segoescript", 75).render(time, True, "Red")
+        cards_lefttxt =  pygame.font.SysFont("segoescript", 75).render(str(self.cards_left), True, "Red")
         self.screen.blit(self.interface, (250, 37.5/2))
         self.current_card.render()
-        self.screen.blit(text, (400, 75))
+        self.screen.blit(timetxt, (400, 75))
+        self.screen.blit(cards_lefttxt, (1150, 75))
         if self.holding_card is not None:
             self.holding_card.render()
 
@@ -171,5 +172,10 @@ class EndState(State):
     def tick(self, states):
         return self
     def render(self):
-        self.screen.fill("Green")
-        return self
+        self.screen.fill("White")
+        time = timer.time
+
+        txt = pygame.font.SysFont("segoescript", 75).render("You Win", True, "Green")
+        timetxt = pygame.font.SysFont("segoescript", 75).render(str(int(time * 10) / 10), True, "Black")
+        self.screen.blit(txt, (self.screen.get_width()/2 - txt.get_width()/2, self.screen.get_height()/2 - txt.get_height()/2))
+        self.screen.blit(timetxt, (self.screen.get_width() / 2 - txt.get_width() / 2, self.screen.get_height() / 2 + txt.get_height() / 2))
