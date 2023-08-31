@@ -45,7 +45,7 @@ class ClickCard(Card):
             self.eventHandler.is_lockedc["left"] = True
 
             mousePos = self.eventHandler.mousePos
-            if mousePos[0] > self.pos[0] and mousePos[0] < self.pos[0] + self.surface_size[0] and mousePos[1] > self.pos[1] and mousePos[1] < self.pos[1] + self.surface_size[1]:
+            if self.pos[0] < mousePos[0] < self.pos[0] + self.surface_size[0] and self.pos[1] < mousePos[1] < self.pos[1] + self.surface_size[1]:
                 self.done()
                 return True
         if not self.eventHandler.is_clicked["left"]:
@@ -69,15 +69,15 @@ class SliceCard(Card):
             self.clicked = True
             mousePos = self.eventHandler.mousePos
             if self.state is None:
-                if mousePos[0] >= 676 and mousePos[0] <= 1000 and mousePos[1] <= 360:
+                if 676 <= mousePos[0] <= 1000 and mousePos[1] <= 360:
                     self.state = "starting"
             if self.state == "starting":
-                if mousePos[0] >= 676 and mousePos[0] <= 1000 and mousePos[1] >= 360 and mousePos[1] <= 783:
+                if 676 <= mousePos[0] <= 1000 and 360 <= mousePos[1] <= 783:
                     self.state = "going"
             if self.state == "going":
-                if mousePos[0] >= 676 and mousePos[0] <= 1000 and mousePos[1] <= 360:
+                if 676 <= mousePos[0] <= 1000 and mousePos[1] <= 360:
                     self.state = "starting"
-                if mousePos[0] >= 676 and mousePos[0] <= 1000 and mousePos[1] >= 783:
+                if 676 <= mousePos[0] <= 1000 and mousePos[1] >= 783:
                     self.done()
                     return True
             if mousePos[0] < 676 or mousePos[0] > 1000:
@@ -126,7 +126,6 @@ class RememberCard(Card):
         self.sequence = []
         self.inputs = 0
         self.answer = [2,2,1,2,3,1,3]
-        self.font = pygame.font.SysFont("segoescript", 92)
 
     def tick(self):
         super().tick()
@@ -166,15 +165,14 @@ class RememberCard(Card):
         if self.end:
             return
         if self.started:
-            surface = pygame.Surface((950, 120))
+            surface = pygame.Surface((950 - self.inputs*125, 120))
             surface.fill((255,236,177))
-            self.screen.blit(surface, (300, 435))
-            text = self.font.render("did you?", True, "Red")
-            self.screen.blit(text, (self.screen.get_width()/2 - text.get_width()/2, 435))
+            self.screen.blit(surface, (350 + self.inputs*125, 435))
 
 class MinefieldCard(Card):
     def __init__(self, screen, eventHandler):
         super().__init__("res/minefield_card.png", screen, eventHandler)
+
         self.field = [[False, False, True, False, False, True, False],
                       [False, True, False, False, False, True, False],
                       [False, True, False, True, False, False, False],
@@ -243,3 +241,74 @@ class MinefieldCard(Card):
             for x in range(7):
                 if self.field[y][x] == "x":
                     self.screen.blit(self.xtxt, (606 + x*50 + 5, 391 + y*50 - 17))
+
+class RightCard(Card):
+    def __init__(self, screen, eventHandler):
+        super().__init__("res/right_card.png", screen, eventHandler)
+        self.hint_counter = 0
+        self.hint = False
+        self.stronghint = False
+        self.font1 = pygame.font.SysFont("segoescript", 30)
+        self.font2 = pygame.font.SysFont("segoescript", 20)
+        self.hinttxt = self.font1.render("hint: your mouse!", True, "Red")
+        self.stronghinttxt = self.font2.render("right click! -.-", True, "Red")
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            self.hint_counter += 1
+            return False
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+
+        if self.eventHandler.is_clicked["right"] and not self.eventHandler.is_lockedc["right"]:
+            self.eventHandler.is_lockedc["right"] = True
+            self.done()
+            return True
+        if not self.eventHandler.is_clicked["right"]:
+            self.eventHandler.is_lockedc["right"] = False
+
+        if self.hint_counter >= 10:
+            self.hint = True
+        if self.hint_counter >= 25:
+            self.stronghint = True
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+
+        if self.hint:
+            self.screen.blit(self.hinttxt, (self.screen.get_width()/2 + 130, self.screen.get_height()/2 + 45))
+        if self.stronghint:
+            self.screen.blit(self.stronghinttxt, (self.screen.get_width() / 2 + 220, self.screen.get_height() / 2 + 90))
+
+class ImpossiblequizCard(Card):
+    def __init__(self, screen, eventHandler):
+        super().__init__("res/impossiblequiz_card.png", screen, eventHandler)
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            mousePos = self.eventHandler.mousePos
+            if 429 <= mousePos[0] <= 782:
+                if 569 <= mousePos[1] <= 673:
+                    return False
+                if 679 <= mousePos[1] <= 783:
+                    return False
+            if 798 <= mousePos[0] <= 1151:
+                if 569 <= mousePos[1] <= 673:
+                    return False
+                if 679 <= mousePos[1] <= 783:
+                    self.done()
+                    return True
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
