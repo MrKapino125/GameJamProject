@@ -102,7 +102,7 @@ class MenuState(State):
         pygame.draw.circle(self.screen, self.red_color, (6.5 * width / 10, 750), self.red_size)
 
         play_pos = (width / 2 - self.play_width / 2, 11 * height / 20 - self.play_height / 2)
-        if mousePos[0] > play_pos[0] and mousePos[0] < play_pos[0] + self.play_width and mousePos[1] > play_pos[1] and mousePos[1] < play_pos[1] + self.play_height:
+        if play_pos[0] < mousePos[0] < play_pos[0] + self.play_width and play_pos[1] < mousePos[1] < play_pos[1] + self.play_height:
             self.screen.blit(self.play_button_hovered, (play_pos))
         else:
             self.screen.blit(self.play_button, (play_pos))
@@ -117,7 +117,10 @@ class GameState(State):
         self.minefieldCard = card.MinefieldCard(screen, eventHandler)
         self.rightCard = card.RightCard(screen, eventHandler)
         self.impossiblequizCard = card.ImpossiblequizCard(screen, eventHandler)
-        self.cards = [self.rightCard, self.minefieldCard, self.rememberCard, self.mathCard, self.sliceCard, self.clickCard,  self.impossiblequizCard]
+        self.notclickbuttonCard = card.NotclickbuttonCard(screen, eventHandler)
+        self.messageCard = card.MessageCard(screen, eventHandler)
+        self.labyrinthCard = card.LabyrinthCard(screen, eventHandler)
+        self.cards = [self.rightCard, self.minefieldCard, self.rememberCard, self.mathCard, self.sliceCard, self.clickCard,  self.impossiblequizCard, self.notclickbuttonCard, self.messageCard, self.labyrinthCard]
         self.interface = pygame.image.load("res/interface.png")
 
         self.cards_left = len(self.cards)
@@ -158,7 +161,10 @@ class GameState(State):
         self.screen.blit(self.interface, (250, 37.5/2))
         self.current_card.render(self.cardcounter)
         self.screen.blit(timetxt, (400, 75))
-        self.screen.blit(cards_lefttxt, (1150, 75))
+        if self.cards_left < 10:
+            self.screen.blit(cards_lefttxt, (1150, 75))
+        else:
+            self.screen.blit(cards_lefttxt, (1100, 75))
         if self.holding_card is not None:
             self.holding_card.render(self.cardcounter - 1)
 

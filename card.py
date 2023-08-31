@@ -1,3 +1,5 @@
+import math
+
 import pygame
 
 class Card:
@@ -11,6 +13,8 @@ class Card:
         self.win = False
         self.end = False
         self.counter = 0
+        self.numberfont = pygame.font.SysFont("segoescript", 49)
+        self.numberfont.set_bold(True)
 
     def tick(self):
         if self.win:
@@ -22,16 +26,17 @@ class Card:
 
     def render(self, counter):
         self.screen.blit(self.surface, self.pos)
-        font = pygame.font.SysFont("segoescript", 49)
-        font.set_bold(True)
-        number = font.render(str(counter), True, (255,236,177))
-        if counter < 10:
-            self.screen.blit(number, (self.pos[0]+30, self.pos[1]+460))
-        else:
-            self.screen.blit(number, (self.pos[0] + 10, self.pos[1] + 465))
+        self.drawNumber(counter)
     def done(self):
         self.win = True
         self.end = True
+
+    def drawNumber(self, counter):
+        number = self.numberfont.render(str(counter), True, (255, 236, 177))
+        if counter < 10:
+            self.screen.blit(number, (self.pos[0] + 30, self.pos[1] + 460))
+        else:
+            self.screen.blit(number, (self.pos[0] + 10, self.pos[1] + 465))
 
 
 class ClickCard(Card):
@@ -79,6 +84,7 @@ class SliceCard(Card):
                     self.state = "starting"
                 if 676 <= mousePos[0] <= 1000 and mousePos[1] >= 783:
                     self.done()
+                    self.eventHandler.is_lockedc["left"] = True
                     return True
             if mousePos[0] < 676 or mousePos[0] > 1000:
                 self.state = None
@@ -338,3 +344,101 @@ class ImpossiblequizCard(Card):
         if self.wrong:
             self.wrongImg.set_alpha(self.alpha)
             self.screen.blit(self.wrongImg, (self.size[0]/2 - self.wrongImg.get_width()/2, self.size[1]/2 + 10))
+
+class NotclickbuttonCard(Card):
+    def __init__(self, screen, eventHandler):
+        super().__init__("res/notclickbutton_card.png", screen, eventHandler)
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+
+            mousePos = self.eventHandler.mousePos
+            if 628 <= mousePos[1] <= 752:
+                if 403 <= mousePos[0] <= 575:
+                    self.done()
+                    return True
+                if 702 <= mousePos[0] <= 876:
+                    return False
+                if 1000 <= mousePos[0] <= 1174:
+                    return False
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+
+class MessageCard(Card):
+    def __init__(self, screen, eventHandler):
+        super().__init__("res/message_card.png", screen, eventHandler)
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+
+            mousePos = self.eventHandler.mousePos
+            if self.pos[0] <= mousePos[0] <= self.pos[0] + 85 and self.pos[1] <= mousePos[1] <= self.pos[1] + 85:
+                self.done()
+                return True
+            return False
+
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+
+class LabyrinthCard(Card):
+    def __init__(self, screen, eventHandler):
+        super().__init__("res/labyrinth_card.png", screen, eventHandler)
+        self.starting = False
+        self.clicked = False
+        self.font = pygame.font.SysFont("segoescript", 40)
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.clicked = True
+            mousePos = self.eventHandler.mousePos
+            if not self.starting:
+                if math.sqrt((mousePos[0] - (self.pos[0] + 207))**2 + (mousePos[1] - (self.pos[1] + 282))**2) <= 53:
+                    self.starting = True
+            else:
+                if math.sqrt((mousePos[0] - 1219) ** 2 + (mousePos[1] - 600) ** 2) <= 80 or math.sqrt((mousePos[0] - (self.pos[0] + 207)) ** 2 + (mousePos[1] - (self.pos[1] + 282)) ** 2) <= 95 or 523 <= mousePos[0] <= 714 and 514 <= mousePos[1] <= 623 or 606 <= mousePos[0] <= 714 and 374 <= mousePos[1] <= 550 or 635 <= mousePos[0] <= 872 and 389 <= mousePos[1] <= 473 or 780 <= mousePos[0] <= 865 and 397 <= mousePos[1] <= 741 or 779 <= mousePos[0] <= 1078 and 670 <= mousePos[1] <= 748 or 1005 <= mousePos[0] <= 1080 and 547 <= mousePos[1] <= 670 or 1080 <= mousePos[0] <= 1214 and 547 <= mousePos[1] <= 645:
+                    pass
+                else:
+                    self.starting = False
+                    self.eventHandler.is_lockedc["left"] = True
+                    self.clicked = False
+                    return False
+                if math.sqrt((mousePos[0] - 1219) ** 2 + (mousePos[1] - 600) ** 2) <= 52:
+                    self.eventHandler.is_lockedc["left"] = True
+                    self.done()
+                    return True
+
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+            self.starting = False
+            if self.clicked:
+                self.clicked = False
+                return False
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        if self.starting:
+            surface = self.font.render("traversing...", True, "Red")
+            self.screen.blit(surface, (self.pos[0] + 700, self.pos[1] + 100))
