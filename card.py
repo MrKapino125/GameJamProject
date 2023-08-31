@@ -280,13 +280,17 @@ class RightCard(Card):
             return
 
         if self.hint:
-            self.screen.blit(self.hinttxt, (self.screen.get_width()/2 + 130, self.screen.get_height()/2 + 45))
+            self.screen.blit(self.hinttxt, (self.size[0]/2 + 130, self.size[1]/2 + 45))
         if self.stronghint:
-            self.screen.blit(self.stronghinttxt, (self.screen.get_width() / 2 + 220, self.screen.get_height() / 2 + 90))
+            self.screen.blit(self.stronghinttxt, (self.size[0]/2 + 220, self.size[1]/2 + 90))
 
 class ImpossiblequizCard(Card):
     def __init__(self, screen, eventHandler):
         super().__init__("res/impossiblequiz_card.png", screen, eventHandler)
+        self.wrong = False
+        self.alpha = 0
+        self.wrongImg = pygame.image.load("res/wrong_impossiblequiz.png")
+        self.counter = 0
 
     def tick(self):
         super().tick()
@@ -297,18 +301,40 @@ class ImpossiblequizCard(Card):
             mousePos = self.eventHandler.mousePos
             if 429 <= mousePos[0] <= 782:
                 if 569 <= mousePos[1] <= 673:
+                    self.alpha = 255
+                    self.wrong = True
+                    self.counter = 0
                     return False
                 if 679 <= mousePos[1] <= 783:
+                    self.alpha = 255
+                    self.wrong = True
+                    self.counter = 0
                     return False
             if 798 <= mousePos[0] <= 1151:
                 if 569 <= mousePos[1] <= 673:
+                    self.alpha = 255
+                    self.wrong = True
+                    self.counter = 0
                     return False
                 if 679 <= mousePos[1] <= 783:
                     self.done()
                     return True
         if not self.eventHandler.is_clicked["left"]:
             self.eventHandler.is_lockedc["left"] = False
+
+        if self.wrong:
+            self.counter += 1
+            if self.counter < 7:
+                return
+            self.alpha -= 255 / 6
+            if self.alpha < 0:
+                self.alpha = 0
+                self.wrong = False
+                self.counter = 0
     def render(self, counter):
         super().render(counter)
         if self.end:
             return
+        if self.wrong:
+            self.wrongImg.set_alpha(self.alpha)
+            self.screen.blit(self.wrongImg, (self.size[0]/2 - self.wrongImg.get_width()/2, self.size[1]/2 + 10))

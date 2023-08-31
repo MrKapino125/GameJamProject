@@ -117,7 +117,7 @@ class GameState(State):
         self.minefieldCard = card.MinefieldCard(screen, eventHandler)
         self.rightCard = card.RightCard(screen, eventHandler)
         self.impossiblequizCard = card.ImpossiblequizCard(screen, eventHandler)
-        self.cards = [self.impossiblequizCard, self.rightCard, self.minefieldCard, self.rememberCard, self.mathCard, self.sliceCard, self.clickCard]
+        self.cards = [self.rightCard, self.minefieldCard, self.rememberCard, self.mathCard, self.sliceCard, self.clickCard,  self.impossiblequizCard]
         self.interface = pygame.image.load("res/interface.png")
 
         self.cards_left = len(self.cards)
