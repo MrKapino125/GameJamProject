@@ -50,13 +50,6 @@ class MenuState(State):
         self.play_width = 750
         self.play_height = 150
     def tick(self, states):
-        if self.eventHandler.is_pressed["s"] and not self.eventHandler.is_lockedp["s"]:
-            self.eventHandler.is_lockedp["s"] = True
-        if not self.eventHandler.is_pressed["s"]:
-            self.eventHandler.is_lockedp["s"] = False
-        if self.eventHandler.is_pressed["a"]:
-            return states[1]
-
         if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
             self.eventHandler.is_lockedc["left"] = True
 
@@ -120,7 +113,9 @@ class GameState(State):
         self.clickCard = card.ClickCard(screen, eventHandler)
         self.sliceCard = card.SliceCard(screen, eventHandler)
         self.mathCard = card.MathCard(screen, eventHandler)
-        self.cards = [self.mathCard, self.sliceCard, self.clickCard]
+        self.rememberCard = card.RememberCard(screen, eventHandler)
+        self.minefieldCard = card.MinefieldCard(screen, eventHandler)
+        self.cards = [self.minefieldCard, self.rememberCard, self.mathCard, self.sliceCard, self.clickCard]
         self.interface = pygame.image.load("res/interface.png")
 
         self.cards_left = len(self.cards)
@@ -131,8 +126,6 @@ class GameState(State):
     def tick(self, states):
         super().tick(states)
         timer.tick()
-        if self.eventHandler.is_pressed["d"]:
-            return states[0]
         wincheck = self.current_card.tick()
 
         if wincheck:
