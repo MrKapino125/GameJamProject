@@ -20,8 +20,15 @@ class Card:
                 self.counter = 0
                 self.win = False
 
-    def render(self):
+    def render(self, counter):
         self.screen.blit(self.surface, self.pos)
+        font = pygame.font.SysFont("segoescript", 49)
+        font.set_bold(True)
+        number = font.render(str(counter), True, (255,236,177))
+        if counter < 10:
+            self.screen.blit(number, (self.pos[0]+30, self.pos[1]+460))
+        else:
+            self.screen.blit(number, (self.pos[0] + 10, self.pos[1] + 465))
     def done(self):
         self.win = True
         self.end = True
@@ -45,8 +52,8 @@ class ClickCard(Card):
         if not self.eventHandler.is_clicked["left"]:
             self.eventHandler.is_lockedc["left"] = False
 
-    def render(self):
-        super().render()
+    def render(self, counter):
+        super().render(counter)
 
 class SliceCard(Card):
     def __init__(self, screen, eventHandler):
@@ -83,8 +90,8 @@ class SliceCard(Card):
                 self.clicked = False
                 return False
 
-    def render(self):
-        super().render()
+    def render(self, counter):
+        super().render(counter)
 
 class MathCard(Card):
     def __init__(self, screen, eventHandler):
@@ -106,5 +113,5 @@ class MathCard(Card):
         if not self.eventHandler.is_clicked["left"]:
             self.eventHandler.is_lockedc["left"] = False
 
-    def render(self):
-        super().render()
+    def render(self, counter):
+        super().render(counter)

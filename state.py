@@ -126,6 +126,7 @@ class GameState(State):
         self.cards_left = len(self.cards)
         self.current_card = self.cards[self.cards_left - 1]
         self.holding_card = None
+        self.cardcounter = 1
 
     def tick(self, states):
         super().tick(states)
@@ -139,6 +140,7 @@ class GameState(State):
             self.holding_card = self.current_card
             self.cards_left -= 1
             self.current_card = self.cards[self.cards_left - 1]
+            self.cardcounter += 1
         elif wincheck == False:
             self.wrong()
 
@@ -159,11 +161,11 @@ class GameState(State):
         timetxt = pygame.font.SysFont("segoescript", 75).render(time, True, "Red")
         cards_lefttxt =  pygame.font.SysFont("segoescript", 75).render(str(self.cards_left), True, "Red")
         self.screen.blit(self.interface, (250, 37.5/2))
-        self.current_card.render()
+        self.current_card.render(self.cardcounter)
         self.screen.blit(timetxt, (400, 75))
         self.screen.blit(cards_lefttxt, (1150, 75))
         if self.holding_card is not None:
-            self.holding_card.render()
+            self.holding_card.render(self.cardcounter - 1)
 
 class EndState(State):
     def __init__(self, screen, eventHandler):
