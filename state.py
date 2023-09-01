@@ -43,7 +43,7 @@ class MenuState(State):
         super().__init__(screen, eventHandler, timer, cardLoader)
         self.play_button = pygame.image.load("res/play_button.png")
         self.play_button_hovered = pygame.image.load("res/play_button_hovered.png")
-        self.logo = pygame.image.load("res/logo_2.png")
+        self.logo = pygame.image.load("res/logo_finalized.png")
 
         self.red_size = 50
         self.yellow_size = 50
@@ -107,7 +107,7 @@ class MenuState(State):
         else:
             self.screen.blit(self.play_button, (play_pos))
 
-        self.screen.blit(self.logo, (width/2 - self.logo.get_width()/2, 50))
+        self.screen.blit(self.logo, (width/2 - self.logo.get_width()/2, 30))
 
 class GameState(State):
     def __init__(self, screen, eventHandler, timer, cardLoader):
@@ -115,8 +115,8 @@ class GameState(State):
         self.interface = pygame.image.load("res/interface.png")
         self.started = False
 
-        self.cards_left = 11
-        self.current_card = self.cardLoader.loadcard(10, self.screen, self.eventHandler, self.timer)
+        self.cards_left = 13
+        self.current_card = self.cardLoader.loadcard(0, self.screen, self.eventHandler, self.timer)
         self.next_card = self.cardLoader.loadcard(1, self.screen, self.eventHandler, self.timer)
         self.holding_card = None
         self.cardcounter = 1

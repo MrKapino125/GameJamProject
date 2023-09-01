@@ -1,4 +1,5 @@
 import math
+import random
 
 import pygame
 
@@ -602,3 +603,124 @@ class PressCard(Card):
             self.screen.blit(self.hide_surface, (593, 685))  # Z
         if not (self.count > 8 or self.buttons[9]):
             self.screen.blit(self.hide_surface, (481, 534))  # F
+
+class TriangleCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/triangle_card.png", screen, eventHandler, timer)
+        self.hover_surface = pygame.Surface((174, 124))
+        self.hover_surface.set_alpha(30)
+        self.hover_surface.set_colorkey((255, 255, 255))
+        self.hint = False
+        self.hint_surface = pygame.Surface((200, 65))
+        self.hint_surface.fill((255, 236, 177))
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+
+            mousePos = self.eventHandler.mousePos
+            if 628 <= mousePos[1] <= 752:
+                if 403 <= mousePos[0] <= 575:
+                    return False
+                if 702 <= mousePos[0] <= 876:
+                    self.hint = True
+                    return False
+                if 1000 <= mousePos[0] <= 1174:
+                    self.done()
+                    return True
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        mousePos = self.eventHandler.mousePos
+        if 628 <= mousePos[1] <= 752:
+            if 403 <= mousePos[0] <= 575:
+                self.screen.blit(self.hover_surface, (403, 628))
+            if 702 <= mousePos[0] <= 876:
+                self.screen.blit(self.hover_surface, (702, 628))
+            if 1000 <= mousePos[0] <= 1174:
+                self.screen.blit(self.hover_surface, (1000, 628))
+        if not self.hint:
+            self.screen.blit(self.hint_surface, (451, 385))
+
+class ColorCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/color_card.png", screen, eventHandler, timer)
+        self.rgb = [0, 0, 0]
+
+        self.red = pygame.Surface((95, 59))
+        self.green = pygame.Surface((95, 59))
+        self.blue = pygame.Surface((95, 59))
+        self.red.fill("Red")
+        self.green.fill("Green")
+        self.blue.fill("Blue")
+        self.answerrgb = [random.randint(0, 5), random.randint(0, 5), random.randint(0, 5)]
+        self.answer_surface = pygame.Surface((175, 175))
+        self.guess_surface = pygame.Surface((175, 175))
+        self.answer_surface.fill((self.answerrgb[0] * 51, self.answerrgb[1] * 51, self.answerrgb[2] * 51))
+
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_pressed["r"] and not self.eventHandler.is_lockedp["r"]:
+            self.eventHandler.is_lockedp["r"] = True
+            self.rgb[0] = (self.rgb[0] + 1) % 6
+        if not self.eventHandler.is_pressed["r"]:
+            self.eventHandler.is_lockedp["r"] = False
+
+        if self.eventHandler.is_pressed["g"] and not self.eventHandler.is_lockedp["g"]:
+            self.eventHandler.is_lockedp["g"] = True
+            self.rgb[1] = (self.rgb[1] + 1) % 6
+        if not self.eventHandler.is_pressed["g"]:
+            self.eventHandler.is_lockedp["g"] = False
+
+        if self.eventHandler.is_pressed["b"] and not self.eventHandler.is_lockedp["b"]:
+            self.eventHandler.is_lockedp["b"] = True
+            self.rgb[2] = (self.rgb[2] + 1) % 6
+        if not self.eventHandler.is_pressed["b"]:
+            self.eventHandler.is_lockedp["b"] = False
+
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            mousePos = self.eventHandler.mousePos
+            if math.sqrt((449 - mousePos[0])**2 + (421 - mousePos[1])**2) <= 54:
+                self.rgb[0] = (self.rgb[0] + 1) % 6
+            if math.sqrt((569 + 49 - mousePos[0])**2 + (421 - mousePos[1])**2) <= 54:
+                self.rgb[1] = (self.rgb[1] + 1) % 6
+            if math.sqrt((735 + 48 - mousePos[0])**2 + (421 - mousePos[1])**2) <= 54:
+                self.rgb[2] = (self.rgb[2] + 1) % 6
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+
+        if self.rgb == self.answerrgb:
+            self.done()
+            return True
+
+
+
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+
+        for i in range(self.rgb[0]):
+            self.screen.blit(self.red, (400, 786 - 59 * (i+1)))
+        for i in range(self.rgb[1]):
+            self.screen.blit(self.green, (569, 786 - 59 * (i+1)))
+        for i in range(self.rgb[2]):
+            self.screen.blit(self.blue, (735, 786 - 59 * (i+1)))
+
+        self.guess_surface.fill((self.rgb[0] * 51, self.rgb[1] * 51, self.rgb[2] * 51))
+        self.screen.blit(self.guess_surface, (1031, 364))
+        self.screen.blit(self.answer_surface, (1031, 596))
+
+

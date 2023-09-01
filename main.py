@@ -20,6 +20,7 @@ cardLoader = cardloader.Cardloader()
 
 states = None
 currentState = None
+reset_lock = False
 
 
 def init():
@@ -49,15 +50,15 @@ def render():
 
 init()
 while True:
-    if eventHandler.is_pressed["r"] and not eventHandler.is_lockedp["r"]:
-        eventHandler.is_lockedp["r"] = True
+    if eventHandler.is_pressed["r"] and not reset_lock:
+        reset_lock = True
         if eventHandler.is_pressed["shift"]:
             reset()
         if eventHandler.is_pressed["strg"]:
             reset(True)
 
     if not eventHandler.is_pressed["r"]:
-        eventHandler.is_lockedp["r"] = False
+        reset_lock = False
 
     tick()
     render()
