@@ -19,10 +19,12 @@ class Card:
         self.numberfont.set_bold(True)
 
     def tick(self):
+        duration = 0.4 * self.timer.fps
+        self.counter += 1
         if self.win:
             self.counter += 1
-            self.pos[0] += 1350 / 6
-            if self.counter == 6:
+            self.pos[0] += 1350 / duration
+            if self.counter == duration:
                 self.counter = 0
                 self.win = False
 
@@ -637,6 +639,8 @@ class TriangleCard(Card):
 
     def render(self, counter):
         super().render(counter)
+        if not self.hint:
+            self.screen.blit(self.hint_surface, (self.pos[0] + 201, self.pos[1] + 93))
         if self.end:
             return
         mousePos = self.eventHandler.mousePos
@@ -647,8 +651,6 @@ class TriangleCard(Card):
                 self.screen.blit(self.hover_surface, (702, 628))
             if 1000 <= mousePos[0] <= 1174:
                 self.screen.blit(self.hover_surface, (1000, 628))
-        if not self.hint:
-            self.screen.blit(self.hint_surface, (451, 385))
 
 class ColorCard(Card):
     def __init__(self, screen, eventHandler, timer):
@@ -709,18 +711,19 @@ class ColorCard(Card):
 
     def render(self, counter):
         super().render(counter)
+        for i in range(self.rgb[0]):
+            self.screen.blit(self.red, (self.pos[0] + 150, self.pos[1] + 494 - 59 * (i+1)))
+        for i in range(self.rgb[1]):
+            self.screen.blit(self.green, (self.pos[0] + 319, self.pos[1] + 494 - 59 * (i+1)))
+        for i in range(self.rgb[2]):
+            self.screen.blit(self.blue, (self.pos[0] + 485, self.pos[1] + 494 - 59 * (i+1)))
+
+        self.guess_surface.fill((self.rgb[0] * 51, self.rgb[1] * 51, self.rgb[2] * 51))
+        self.screen.blit(self.guess_surface, (self.pos[0] + 781, self.pos[1] + 72))
+        self.screen.blit(self.answer_surface, (self.pos[0] + 781, self.pos[1] + 304))
         if self.end:
             return
 
-        for i in range(self.rgb[0]):
-            self.screen.blit(self.red, (400, 786 - 59 * (i+1)))
-        for i in range(self.rgb[1]):
-            self.screen.blit(self.green, (569, 786 - 59 * (i+1)))
-        for i in range(self.rgb[2]):
-            self.screen.blit(self.blue, (735, 786 - 59 * (i+1)))
 
-        self.guess_surface.fill((self.rgb[0] * 51, self.rgb[1] * 51, self.rgb[2] * 51))
-        self.screen.blit(self.guess_surface, (1031, 364))
-        self.screen.blit(self.answer_surface, (1031, 596))
 
 

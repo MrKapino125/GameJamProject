@@ -14,7 +14,7 @@ screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("CardGame")
 clock = pygame.time.Clock()
 eventHandler = eventhandler.Eventhandler()
-background = pygame.image.load("res/gdbackground4.png")
+background = pygame.image.load("res/gdbackground4compri.jpg")
 timer = timer.Timer()
 cardLoader = cardloader.Cardloader()
 
