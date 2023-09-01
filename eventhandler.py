@@ -40,6 +40,8 @@ class Eventhandler:
                            "8": False,
                            "9": False,
                            "0": False,
+                           "shift": False,
+                           "strg": False
                            }
         self.is_clicked = {"left": False,
                            "right": False,
@@ -53,11 +55,19 @@ class Eventhandler:
                 exit()
             if event.type == pygame.KEYDOWN:
                 uni = event.key
+                if uni == 1073742049:
+                    self.is_pressed["shift"] = True
+                if uni == 1073742048:
+                    self.is_pressed["strg"] = True
                 if (uni > 122 or uni < 97) and (uni < 48 or uni > 57):
                     break
                 self.is_pressed[chr(uni)] = True
             if event.type == pygame.KEYUP:
                 uni = event.key
+                if uni == 1073742049:
+                    self.is_pressed["shift"] = False
+                if uni == 1073742048:
+                    self.is_pressed["strg"] = False
                 if (uni > 122 or uni < 97) and (uni < 48 or uni > 57):
                     break
                 self.is_pressed[chr(uni)] = False

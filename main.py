@@ -4,6 +4,7 @@ import state
 import eventhandler
 import time
 import timer
+import cardloader
 
 pygame.init()
 pygame.font.init()
@@ -14,6 +15,8 @@ pygame.display.set_caption("CardGame")
 clock = pygame.time.Clock()
 eventHandler = eventhandler.Eventhandler()
 background = pygame.image.load("res/gdbackground4.png")
+timer = timer.Timer()
+cardLoader = cardloader.Cardloader()
 
 states = None
 currentState = None
@@ -23,10 +26,17 @@ def init():
     global states
     global currentState
 
-    states = [state.MenuState(screen, eventHandler), state.GameState(screen, eventHandler),
-              state.EndState(screen, eventHandler)]
+    states = [state.MenuState(screen, eventHandler, timer, cardLoader), state.GameState(screen, eventHandler, timer, cardLoader),
+              state.EndState(screen, eventHandler, timer, cardLoader)]
     currentState = states[0]
 
+
+def reset(full=False):
+    global currentState
+    if full:
+        return init()
+    init()
+    currentState = states[1]
 
 def tick():
     global currentState
@@ -41,7 +51,10 @@ init()
 while True:
     if eventHandler.is_pressed["r"] and not eventHandler.is_lockedp["r"]:
         eventHandler.is_lockedp["r"] = True
-        init()
+        if eventHandler.is_pressed["shift"]:
+            reset()
+        if eventHandler.is_pressed["strg"]:
+            reset(True)
 
     if not eventHandler.is_pressed["r"]:
         eventHandler.is_lockedp["r"] = False

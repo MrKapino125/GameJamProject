@@ -2,20 +2,20 @@ import pygame
 import math
 import card
 
-import timer
-timer = timer.Timer()
-
 class State:
-    def __init__(self, screen, eventHandler):
+    def __init__(self, screen, eventHandler, timer, cardLoader):
         self.screen = screen
         self.eventHandler = eventHandler
+        self.cardLoader = cardLoader
 
         self.light = False
         self.alpha = 0
         self.color = "Green"
         self.surface = pygame.Surface((screen.get_width(), screen.get_height()))
+        self.timer = timer
+        self.start = None
     def tick(self, states):
-        duration = 6
+        duration = 0.4*self.timer.fps
         if self.light:
             self.alpha -= 255 / duration
             if self.alpha < 0:
@@ -39,10 +39,11 @@ class State:
 
 
 class MenuState(State):
-    def __init__(self, screen, eventHandler):
-        super().__init__(screen, eventHandler)
+    def __init__(self, screen, eventHandler, timer, cardLoader):
+        super().__init__(screen, eventHandler, timer, cardLoader)
         self.play_button = pygame.image.load("res/play_button.png")
         self.play_button_hovered = pygame.image.load("res/play_button_hovered.png")
+        self.logo = pygame.image.load("res/logo_2.png")
 
         self.red_size = 50
         self.yellow_size = 50
@@ -70,7 +71,6 @@ class MenuState(State):
                 self.red_size = 65
             play_pos = (width / 2 - self.play_width / 2, 11 * height / 20 - self.play_height / 2)
             if mousePos[0] > play_pos[0] and mousePos[0] < play_pos[0] + self.play_width and mousePos[1] > play_pos[1] and mousePos[1] < play_pos[1] + self.play_height:
-                timer.start()
                 return states[1]
         if not self.eventHandler.is_clicked["left"]:
             self.eventHandler.is_lockedc["left"] = False
@@ -107,38 +107,36 @@ class MenuState(State):
         else:
             self.screen.blit(self.play_button, (play_pos))
 
-class GameState(State):
-    def __init__(self, screen, eventHandler):
-        super().__init__(screen, eventHandler)
-        self.clickCard = card.ClickCard(screen, eventHandler)
-        self.sliceCard = card.SliceCard(screen, eventHandler)
-        self.mathCard = card.MathCard(screen, eventHandler)
-        self.rememberCard = card.RememberCard(screen, eventHandler)
-        self.minefieldCard = card.MinefieldCard(screen, eventHandler)
-        self.rightCard = card.RightCard(screen, eventHandler)
-        self.impossiblequizCard = card.ImpossiblequizCard(screen, eventHandler)
-        self.notclickbuttonCard = card.NotclickbuttonCard(screen, eventHandler)
-        self.messageCard = card.MessageCard(screen, eventHandler)
-        self.labyrinthCard = card.LabyrinthCard(screen, eventHandler)
-        self.cards = [self.impossiblequizCard, self.rightCard, self.notclickbuttonCard, self.messageCard, self.minefieldCard, self.labyrinthCard, self.rememberCard, self.mathCard, self.sliceCard, self.clickCard]
-        self.interface = pygame.image.load("res/interface.png")
+        self.screen.blit(self.logo, (width/2 - self.logo.get_width()/2, 50))
 
-        self.cards_left = len(self.cards)
-        self.current_card = self.cards[self.cards_left - 1]
+class GameState(State):
+    def __init__(self, screen, eventHandler, timer, cardLoader):
+        super().__init__(screen, eventHandler, timer, cardLoader)
+        self.interface = pygame.image.load("res/interface.png")
+        self.started = False
+
+        self.cards_left = 11
+        self.current_card = self.cardLoader.loadcard(10, self.screen, self.eventHandler, self.timer)
+        self.next_card = self.cardLoader.loadcard(1, self.screen, self.eventHandler, self.timer)
         self.holding_card = None
         self.cardcounter = 1
 
     def tick(self, states):
+        if not self.started:
+            self.timer.start()
+            self.started = True
         super().tick(states)
-        timer.tick()
+        self.timer.tick()
         wincheck = self.current_card.tick()
 
         if wincheck:
             self.correct()
             self.holding_card = self.current_card
             self.cards_left -= 1
-            self.current_card = self.cards[self.cards_left - 1]
             self.cardcounter += 1
+            self.current_card = self.next_card
+            if self.cards_left > 1:
+                self.next_card = self.cardLoader.loadcard(self.cardcounter, self.screen, self.eventHandler, self.timer)
         elif wincheck == False:
             self.wrong()
 
@@ -146,12 +144,12 @@ class GameState(State):
             self.holding_card.tick()
 
         if self.cards_left == 0:
-            timer.stop()
+            self.timer.stop()
             return states[2]
         return self
     def render(self):
         super().render()
-        time = timer.time
+        time = self.timer.time
         if time > 1000:
             time = str(int(time))
         else:
@@ -169,14 +167,14 @@ class GameState(State):
             self.holding_card.render(self.cardcounter - 1)
 
 class EndState(State):
-    def __init__(self, screen, eventHandler):
-        super().__init__(screen, eventHandler)
+    def __init__(self, screen, eventHandler, timer, cardLoader):
+        super().__init__(screen, eventHandler, timer, cardLoader)
 
     def tick(self, states):
         return self
     def render(self):
         self.screen.fill("White")
-        time = timer.time
+        time = self.timer.time
 
         txt = pygame.font.SysFont("segoescript", 75).render("You Win", True, "Green")
         timetxt = pygame.font.SysFont("segoescript", 75).render(str(int(time * 10) / 10), True, "Black")
