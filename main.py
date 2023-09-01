@@ -37,15 +37,12 @@ def render():
     screen.blit(background, (0, 0))
     currentState.render()
 
-
 init()
 while True:
     if eventHandler.is_pressed["r"] and not eventHandler.is_lockedp["r"]:
         eventHandler.is_lockedp["r"] = True
-        for _ in range(3):
-            del states[0]
-        currentState = None
         init()
+
     if not eventHandler.is_pressed["r"]:
         eventHandler.is_lockedp["r"] = False
 
