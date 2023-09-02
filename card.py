@@ -806,7 +806,7 @@ class ReactionCard(Card):
         surface = self.letterfont.render(self.letter.upper(), True, "Black")
         self.screen.blit(surface, (self.pos[0] + self.surface_size[0]/2 - surface.get_width()/2, self.pos[1] + self.surface_size[1]/2 - surface.get_height()/2))
 
-class Lightscard(Card):
+class LightsCard(Card):
     def __init__(self, screen, eventHandler, timer):
         super().__init__("res/lights_card.png", screen, eventHandler, timer)
         self.lights = [True, False, True, False, True, False]
@@ -829,7 +829,7 @@ class Lightscard(Card):
         if not self.eventHandler.is_clicked["left"]:
             self.eventHandler.is_lockedc["left"] = False
 
-        for i in range(5):
+        for i in range(6):
             if self.lights[i]:
                 break
         else:
@@ -842,3 +842,126 @@ class Lightscard(Card):
         for i in range(6):
             if self.lights[i]:
                 pygame.draw.circle(self.screen, "Yellow", (479 + 129*i, 605), 50) # 609
+
+class ButtonsCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/buttons_card.png", screen, eventHandler, timer)
+        self.hover_surface = pygame.Surface((100, 75))
+        self.hover_surface.set_alpha(30)
+        self.hover_surface.set_colorkey((255, 255, 255))
+        self.answer = [random.randint(0,6), random.randint(0,3)]
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            mousePos = self.eventHandler.mousePos
+            for y in range(4):
+                for x in range(7):
+                    if 361 + x * 130 <= mousePos[0] <= 361 + 100 + x * 130 and 416 + y * 90 <= mousePos[1] <= 416 + 75 + y * 90:
+                        if [x,y] == self.answer:
+                            self.done()
+                            return True
+
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        mousePos = self.eventHandler.mousePos
+        for y in range(4):
+            for x in range(7):
+                if 361 + x*130 <= mousePos[0] <= 361 + 100 + x*130 and 416 + y*90 <= mousePos[1] <= 416 + 75 + y*90:
+                    self.screen.blit(self.hover_surface, (361 + x*130, 416 + y*90))
+
+class WingdingsCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/wingdings_card.png", screen, eventHandler, timer)
+        self.answer = chr(random.randint(97, 122))
+        self.guess = None
+        self.font_answer = pygame.font.SysFont("wingdings", 65)
+        self.font_guess = pygame.font.SysFont("wingdings", 95)
+        self.answer_surface = self.font_answer.render(self.answer, True, "Red")
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        for button in self.eventHandler.is_pressed:
+            if not button.isalpha() or button == "shift" or button == "strg":
+                continue
+            if self.eventHandler.is_pressed[button] and not self.eventHandler.is_lockedp[button]:
+                self.eventHandler.is_lockedp[button] = True
+                self.guess = button
+                self.wronglock = False
+            if not self.eventHandler.is_pressed[button]:
+                self.eventHandler.is_lockedp[button] = False
+
+        if self.guess == self.answer:
+            self.done()
+            return True
+
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        self.screen.blit(self.answer_surface, (self.size[0] / 2 + 68, self.pos[1] + 57))
+        if self.guess is not None:
+            guess_surface = self.font_guess.render(self.guess, True, "Black")
+            self.screen.blit(guess_surface, (self.size[0]/2 - guess_surface.get_width()/2, self.size[1]/2 + self.pos[1]/2 - 30))
+
+class ReplikaCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/replika_card.png", screen, eventHandler, timer)
+        self.hover_surface = pygame.Surface((60, 60))
+        self.hover_surface.set_alpha(15)
+        self.hover_surface.set_colorkey((255, 255, 255))
+        self.light_surface = pygame.Surface((60, 60))
+        self.light_surface.fill("White")
+        self.answer = []
+        for _ in range(5):
+            row = []
+            for _ in range(5):
+                row.append(random.randint(0, 1))
+            self.answer.append(row)
+        self.guess = []
+        for _ in range(5):
+            row = []
+            for _ in range(5):
+                row.append(random.randint(0, 1))
+            self.guess.append(row)
+
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            mousePos = self.eventHandler.mousePos
+            for y in range(5):
+                for x in range(5):
+                    if 860 + x * 75 <= mousePos[0] <= 860 + 60 + x * 75 and 416 + y * 75 <= mousePos[1] <= 416 + 60 + y * 75:
+                        self.guess[y][x] = not self.guess[y][x]
+
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+        if self.guess == self.answer:
+            self.done()
+            return True
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        mousePos = self.eventHandler.mousePos
+        for y in range(5):
+            for x in range(5):
+                if self.answer[y][x]:
+                    self.screen.blit(self.light_surface, (378 + x * 75, 416 + y * 75))
+                if self.guess[y][x]:
+                    self.screen.blit(self.light_surface, (860 + x * 75, 416 + y * 75))
+                if 860 + x * 75 <= mousePos[0] <= 860 + 60 + x * 75 and 416 + y * 75 <= mousePos[1] <= 416 + 60 + y * 75:
+                    self.screen.blit(self.hover_surface, (860 + x * 75, 416 + y * 75))

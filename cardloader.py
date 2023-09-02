@@ -34,5 +34,11 @@ class Cardloader:
             case 14:
                 return card.ReactionCard(screen, eventhandler, timer)
             case 15:
-                return card.Lightscard(screen, eventhandler, timer)
+                return card.LightsCard(screen, eventhandler, timer)
+            case 16:
+                return card.ButtonsCard(screen, eventhandler, timer)
+            case 17:
+                return card.WingdingsCard(screen, eventhandler, timer)
+            case 18:
+                return card.ReplikaCard(screen, eventhandler, timer)
 

@@ -47,12 +47,31 @@ class MenuState(State):
         self.play_button = pygame.image.load("res/play_button.png")
         self.play_button_hovered = pygame.image.load("res/play_button_hovered.png")
         self.logo = pygame.image.load("res/logo_finalized.png")
+        self.button = "Green"
+        self.lock = True
+        self.textfont = pygame.font.SysFont("segoescript", 25)
+        self.text1 = self.textfont.render("All ON", True, "Red")
+        self.text2 = self.textfont.render("Music OFF", True, "Red")
+        self.text3 = self.textfont.render("All OFF", True, "Red")
 
-        self.red_size = 50
-        self.yellow_size = 50
-        self.green_size = 65
         self.play_width = 750
         self.play_height = 150
+
+        if soundLoader.running and soundLoader.sfx["wrong"].get_volume() > 0:
+            self.button = "Green"
+            self.green_size = 65
+            self.yellow_size = 50
+            self.red_size = 50
+        elif not soundLoader.running and soundLoader.sfx["wrong"].get_volume() > 0:
+            self.button = "Yellow"
+            self.green_size = 50
+            self.yellow_size = 65
+            self.red_size = 50
+        if not soundLoader.running and soundLoader.sfx["wrong"].get_volume() == 0:
+            self.button = "Green"
+            self.green_size = 50
+            self.yellow_size = 50
+            self.red_size = 65
     def tick(self, states):
         if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
             self.eventHandler.is_lockedc["left"] = True
@@ -64,17 +83,32 @@ class MenuState(State):
                 self.green_size = 65
                 self.yellow_size = 50
                 self.red_size = 50
+                self.button = "Green"
+                self.lock = False
             elif math.sqrt((mousePos[1] - 750)**2 + (mousePos[0] - 5 * width / 10)**2) < self.yellow_size + 10:
                 self.green_size = 50
                 self.yellow_size = 65
                 self.red_size = 50
+                self.button = "Yellow"
+                self.lock = False
             elif math.sqrt((mousePos[1] - 750)**2 + (mousePos[0] - 6.5 * width / 10)**2) < self.red_size + 10:
                 self.green_size = 50
                 self.yellow_size = 50
                 self.red_size = 65
+                self.button = "Red"
+                self.lock = False
             play_pos = (width / 2 - self.play_width / 2, 11 * height / 20 - self.play_height / 2)
             if mousePos[0] > play_pos[0] and mousePos[0] < play_pos[0] + self.play_width and mousePos[1] > play_pos[1] and mousePos[1] < play_pos[1] + self.play_height:
                 return states[1]
+            if self.button == "Green" and not self.lock:
+                self.soundLoader.play()
+                self.soundLoader.set_volume()
+            if self.button == "Yellow" and not self.lock:
+                self.soundLoader.stop()
+                self.soundLoader.set_volume()
+            if self.button == "Red" and not self.lock:
+                self.soundLoader.stop()
+                self.soundLoader.mute_volume()
         if not self.eventHandler.is_clicked["left"]:
             self.eventHandler.is_lockedc["left"] = False
 
@@ -112,13 +146,17 @@ class MenuState(State):
 
         self.screen.blit(self.logo, (width/2 - self.logo.get_width()/2, 30))
 
+        self.screen.blit(self.text1, (3.5 * width / 10 - self.text1.get_width()/2, 750 + 80))
+        self.screen.blit(self.text2, (width / 2 - self.text2.get_width()/2, 750 + 80))
+        self.screen.blit(self.text3, (6.5 * width / 10 - self.text3.get_width()/2, 750 + 80))
+
 class GameState(State):
     def __init__(self, screen, eventHandler, timer, cardLoader, soundLoader):
         super().__init__(screen, eventHandler, timer, cardLoader, soundLoader)
         self.interface = pygame.image.load("res/interface.png")
         self.started = False
 
-        self.cards_left = 16
+        self.cards_left = 19
         self.current_card = self.cardLoader.loadcard(0, self.screen, self.eventHandler, self.timer)
         self.next_card = self.cardLoader.loadcard(1, self.screen, self.eventHandler, self.timer)
         self.holding_card = None

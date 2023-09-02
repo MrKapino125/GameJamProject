@@ -5,7 +5,7 @@ class Timer():
         self.ticking = False
         self.start_time = None
         self.time = 0
-        self.fps = 20
+        self.fps = 35
         self.frames = 0
         self.delta = 0
         self.deltaTime = 0
