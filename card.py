@@ -1002,9 +1002,8 @@ class AsteroidsCard(Card):
 
     def render(self, counter):
         super().render(counter)
+        for point in self.points:
+            pygame.draw.circle(self.screen, "Red", (self.pos[0] - 250 + point[0], point[1]), point[2])
         if self.end:
             return
-
-        for point in self.points:
-            pygame.draw.circle(self.screen, "Red", (point[0], point[1]), point[2])
         pygame.draw.circle(self.screen, "Green", self.player, 8)
