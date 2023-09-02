@@ -965,3 +965,46 @@ class ReplikaCard(Card):
                     self.screen.blit(self.light_surface, (860 + x * 75, 416 + y * 75))
                 if 860 + x * 75 <= mousePos[0] <= 860 + 60 + x * 75 and 416 + y * 75 <= mousePos[1] <= 416 + 60 + y * 75:
                     self.screen.blit(self.hover_surface, (860 + x * 75, 416 + y * 75))
+
+class AsteroidsCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/asteroids_card.png", screen, eventHandler, timer)
+        self.middle = (self.pos[0] + self.surface_size[0]/2, self.pos[1] + self.surface_size[1]/2)
+        self.points = [(650, 450, 50), (600, 600, 40), (620, 510, 15), (720, 380, 35), (683, 555, 20), (695, 675, 60), (740, 522, 32), (835, 404, 55), (835, 482, 18), (823, 527, 25), (744, 602, 20), (912, 602, 75), (805, 703, 37), (745, 760, 32), (870, 720, 18), (961, 700, 24), (903, 762, 25), (1032, 758, 34), (1070, 681, 40), (1048, 603, 32), (1071, 505, 45), (952, 493, 25), (988, 463, 15), (1017, 399, 39), (1118, 387, 50), (1160, 521, 32), (1132, 615, 32), (468, 379, 3)]
+        self.player = [self.middle[0] - 335, self.middle[1] - 2]
+
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_pressed["w"]:
+            self.player[1] -= 3
+        if self.eventHandler.is_pressed["a"]:
+            self.player[0] -= 3
+        if self.eventHandler.is_pressed["s"]:
+            self.player[1] += 3
+        if self.eventHandler.is_pressed["d"]:
+            self.player[0] += 3
+        if self.player[0] < 351:
+            self.player[0] = 351
+        if self.player[1] < 349:
+            self.player[1] = 349
+        if self.player[1] > 791:
+            self.player[1] = 791
+        if self.player[0] > 1149:
+            self.done()
+            return True
+        for point in self.points:
+            if math.sqrt((self.player[0] - point[0])**2 + (self.player[1] - point[1])**2) < point[2] + 8:
+                self.player = [self.middle[0] - 335, self.middle[1] - 2]
+                return False
+
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+
+        for point in self.points:
+            pygame.draw.circle(self.screen, "Red", (point[0], point[1]), point[2])
+        pygame.draw.circle(self.screen, "Green", self.player, 8)

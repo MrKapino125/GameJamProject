@@ -156,7 +156,7 @@ class GameState(State):
         self.interface = pygame.image.load("res/interface.png")
         self.started = False
 
-        self.cards_left = 19
+        self.cards_left = 20
         self.current_card = self.cardLoader.loadcard(0, self.screen, self.eventHandler, self.timer)
         self.next_card = self.cardLoader.loadcard(1, self.screen, self.eventHandler, self.timer)
         self.holding_card = None

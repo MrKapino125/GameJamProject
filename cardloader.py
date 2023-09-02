@@ -41,4 +41,6 @@ class Cardloader:
                 return card.WingdingsCard(screen, eventhandler, timer)
             case 18:
                 return card.ReplikaCard(screen, eventhandler, timer)
+            case 19:
+                return card.AsteroidsCard(screen, eventhandler, timer)
 
