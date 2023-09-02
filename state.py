@@ -3,10 +3,12 @@ import math
 import card
 
 class State:
-    def __init__(self, screen, eventHandler, timer, cardLoader):
+    failcounter = 0
+    def __init__(self, screen, eventHandler, timer, cardLoader, soundLoader):
         self.screen = screen
         self.eventHandler = eventHandler
         self.cardLoader = cardLoader
+        self.soundLoader = soundLoader
 
         self.light = False
         self.alpha = 0
@@ -14,6 +16,7 @@ class State:
         self.surface = pygame.Surface((screen.get_width(), screen.get_height()))
         self.timer = timer
         self.start = None
+
     def tick(self, states):
         duration = 0.4*self.timer.fps
         if self.light:
@@ -39,8 +42,8 @@ class State:
 
 
 class MenuState(State):
-    def __init__(self, screen, eventHandler, timer, cardLoader):
-        super().__init__(screen, eventHandler, timer, cardLoader)
+    def __init__(self, screen, eventHandler, timer, cardLoader, soundLoader):
+        super().__init__(screen, eventHandler, timer, cardLoader, soundLoader)
         self.play_button = pygame.image.load("res/play_button.png")
         self.play_button_hovered = pygame.image.load("res/play_button_hovered.png")
         self.logo = pygame.image.load("res/logo_finalized.png")
@@ -110,13 +113,13 @@ class MenuState(State):
         self.screen.blit(self.logo, (width/2 - self.logo.get_width()/2, 30))
 
 class GameState(State):
-    def __init__(self, screen, eventHandler, timer, cardLoader):
-        super().__init__(screen, eventHandler, timer, cardLoader)
+    def __init__(self, screen, eventHandler, timer, cardLoader, soundLoader):
+        super().__init__(screen, eventHandler, timer, cardLoader, soundLoader)
         self.interface = pygame.image.load("res/interface.png")
         self.started = False
 
-        self.cards_left = 13
-        self.current_card = self.cardLoader.loadcard(12, self.screen, self.eventHandler, self.timer)
+        self.cards_left = 16
+        self.current_card = self.cardLoader.loadcard(0, self.screen, self.eventHandler, self.timer)
         self.next_card = self.cardLoader.loadcard(1, self.screen, self.eventHandler, self.timer)
         self.holding_card = None
         self.cardcounter = 1
@@ -130,6 +133,7 @@ class GameState(State):
         wincheck = self.current_card.tick()
 
         if wincheck:
+            self.soundLoader.playSound("correct")
             self.correct()
             self.holding_card = self.current_card
             self.cards_left -= 1
@@ -138,6 +142,8 @@ class GameState(State):
             if self.cards_left > 1:
                 self.next_card = self.cardLoader.loadcard(self.cardcounter, self.screen, self.eventHandler, self.timer)
         elif wincheck == False:
+            State.failcounter += 1
+            self.soundLoader.playSound("wrong")
             self.wrong()
 
         if self.holding_card is not None:
@@ -167,16 +173,18 @@ class GameState(State):
             self.holding_card.render(self.cardcounter - 1)
 
 class EndState(State):
-    def __init__(self, screen, eventHandler, timer, cardLoader):
-        super().__init__(screen, eventHandler, timer, cardLoader)
+    def __init__(self, screen, eventHandler, timer, cardLoader, soundLoader):
+        super().__init__(screen, eventHandler, timer, cardLoader, soundLoader)
+        self.endscreen = pygame.image.load("res/endscreen_update_update.png")
 
     def tick(self, states):
         return self
     def render(self):
-        self.screen.fill("White")
+        self.screen.blit(self.endscreen, ((1600 - self.endscreen.get_width()) / 2, (900 - self.endscreen.get_height()) / 2))
         time = self.timer.time
 
-        txt = pygame.font.SysFont("segoescript", 75).render("You Win", True, "Green")
+        failstxt = pygame.font.SysFont("segoescript", 75).render(str(self.failcounter), True, "Red")
         timetxt = pygame.font.SysFont("segoescript", 75).render(str(int(time * 10) / 10), True, "Black")
-        self.screen.blit(txt, (self.screen.get_width()/2 - txt.get_width()/2, self.screen.get_height()/2 - txt.get_height()/2))
-        self.screen.blit(timetxt, (self.screen.get_width() / 2 - txt.get_width() / 2, self.screen.get_height() / 2 + txt.get_height() / 2))
+        self.screen.blit(timetxt, (9 * self.screen.get_width() / 20 - timetxt.get_width() / 2 - 20, self.screen.get_height() / 2 - timetxt.get_height() / 2 + 170))
+        self.screen.blit(failstxt, (3 * self.screen.get_width() / 5 - failstxt.get_width() / 2 + 3,
+                                   self.screen.get_height() / 2 - failstxt.get_height() / 2 + 170))

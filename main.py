@@ -5,9 +5,11 @@ import eventhandler
 import time
 import timer
 import cardloader
+import soundloader
 
 pygame.init()
 pygame.font.init()
+pygame.mixer.init()
 width = 1600
 height = 900
 screen = pygame.display.set_mode((width, height))
@@ -17,6 +19,8 @@ eventHandler = eventhandler.Eventhandler()
 background = pygame.image.load("res/gdbackground4compri.jpg")
 timer = timer.Timer()
 cardLoader = cardloader.Cardloader()
+soundLoader = soundloader.Soundloader()
+soundLoader.play()
 
 states = None
 currentState = None
@@ -27,8 +31,8 @@ def init():
     global states
     global currentState
 
-    states = [state.MenuState(screen, eventHandler, timer, cardLoader), state.GameState(screen, eventHandler, timer, cardLoader),
-              state.EndState(screen, eventHandler, timer, cardLoader)]
+    states = [state.MenuState(screen, eventHandler, timer, cardLoader, soundLoader), state.GameState(screen, eventHandler, timer, cardLoader, soundLoader),
+              state.EndState(screen, eventHandler, timer, cardLoader, soundLoader)]
     currentState = states[0]
 
 

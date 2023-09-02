@@ -29,4 +29,10 @@ class Cardloader:
                 return card.PressCard(screen, eventhandler, timer)
             case 12:
                 return card.ColorCard(screen, eventhandler, timer)
+            case 13:
+                return card.AlphabetCard(screen, eventhandler, timer)
+            case 14:
+                return card.ReactionCard(screen, eventhandler, timer)
+            case 15:
+                return card.Lightscard(screen, eventhandler, timer)
 
