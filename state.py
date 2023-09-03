@@ -156,8 +156,8 @@ class GameState(State):
         self.interface = pygame.image.load("res/interface.png")
         self.started = False
 
-        self.cards_left = 20
-        self.current_card = self.cardLoader.loadcard(19, self.screen, self.eventHandler, self.timer)
+        self.cards_left = self.cardLoader.loadcard(-1, self.screen, self.eventHandler, self.timer)
+        self.current_card = self.cardLoader.loadcard(0, self.screen, self.eventHandler, self.timer)
         self.next_card = self.cardLoader.loadcard(1, self.screen, self.eventHandler, self.timer)
         self.holding_card = None
         self.cardcounter = 1
@@ -226,3 +226,4 @@ class EndState(State):
         self.screen.blit(timetxt, (9 * self.screen.get_width() / 20 - timetxt.get_width() / 2 - 20, self.screen.get_height() / 2 - timetxt.get_height() / 2 + 170))
         self.screen.blit(failstxt, (3 * self.screen.get_width() / 5 - failstxt.get_width() / 2 + 3,
                                    self.screen.get_height() / 2 - failstxt.get_height() / 2 + 170))
+

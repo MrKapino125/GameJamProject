@@ -4,6 +4,7 @@ import random
 import pygame
 
 class Card:
+    holding = "testtest12"
     def __init__(self, url, screen, eventHandler, timer):
         self.surface = pygame.image.load(url)
         self.surface_size = self.surface.get_size()
@@ -191,13 +192,12 @@ class RememberCard(Card):
             return
         mousePos = self.eventHandler.mousePos
         if 628 <= mousePos[1] <= 752:
-            if 628 <= mousePos[1] <= 752:
-                if 403 <= mousePos[0] <= 575:
-                    self.screen.blit(self.hover_surface, (403, 628))
-                if 702 <= mousePos[0] <= 876:
-                    self.screen.blit(self.hover_surface, (702, 628))
-                if 1000 <= mousePos[0] <= 1174:
-                    self.screen.blit(self.hover_surface, (1000, 628))
+            if 403 <= mousePos[0] <= 575:
+                self.screen.blit(self.hover_surface, (403, 628))
+            if 702 <= mousePos[0] <= 876:
+                self.screen.blit(self.hover_surface, (702, 628))
+            if 1000 <= mousePos[0] <= 1174:
+                self.screen.blit(self.hover_surface, (1000, 628))
         if self.started:
             surface = pygame.Surface((950 - self.inputs*125, 120))
             surface.fill((255,236,177))
@@ -891,7 +891,7 @@ class WingdingsCard(Card):
         if self.end:
             return
         for button in self.eventHandler.is_pressed:
-            if not button.isalpha() or button == "shift" or button == "strg":
+            if not button.isalpha() or len(button) > 1:
                 continue
             if self.eventHandler.is_pressed[button] and not self.eventHandler.is_lockedp[button]:
                 self.eventHandler.is_lockedp[button] = True
@@ -996,7 +996,7 @@ class AsteroidsCard(Card):
             self.done()
             return True
         for point in self.points:
-            if math.sqrt((self.player[0] - point[0])**2 + (self.player[1] - point[1])**2) < point[2] + 8:
+            if math.sqrt((self.player[0] - point[0])**2 + (self.player[1] - point[1])**2) < point[2] + 5:
                 self.player = [self.middle[0] - 335, self.middle[1] - 2]
                 return False
 
@@ -1007,3 +1007,521 @@ class AsteroidsCard(Card):
         if self.end:
             return
         pygame.draw.circle(self.screen, "Green", self.player, 8)
+
+class GraphCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/graph_card.png", screen, eventHandler, timer)
+        self.points = [(797, 356, 20), (665, 503, 20), (925, 503, 20), (665, 743, 20), (925, 743, 20)]
+        self.edges = [[(797, 356), (665, 503)], [(797, 356), (925, 503)], [(665, 503), (925, 503)], [(665, 503), (665, 743)], [(665, 503), (925, 743)], [(925, 503), (665, 743)], [(925, 503), (925, 743)], [(665, 743), (925, 743)]]
+        self.edges_copy = list(self.edges)
+        self.starting = False
+        self.clicked = False
+        self.way = []
+        self.current = [(0, 0), (0, 0)]
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            mousePos = self.eventHandler.mousePos
+            if not self.starting:
+                for i in range(5):
+                    if math.sqrt((mousePos[0] - (self.points[i][0])) ** 2 + (mousePos[1] - (self.points[i][1])) ** 2) <= 20:
+                        self.way.append((self.points[i][0], self.points[i][1]))
+                        self.starting = True
+                        self.clicked = True
+            else:
+                for i in range(5):
+                    if math.sqrt((mousePos[0] - (self.points[i][0])) ** 2 + (mousePos[1] - (self.points[i][1])) ** 2) <= 20:
+                        if self.points[i] == self.way[len(self.way) - 1] or [(self.points[i][0], self.points[i][1])] in self.way:
+                            continue
+                        if [self.way[len(self.way) - 1], (self.points[i][0], self.points[i][1])] in self.edges_copy or [(self.points[i][0], self.points[i][1]), self.way[len(self.way) - 1]] in self.edges_copy:
+                            for j in range(len(self.edges_copy)):
+                                if self.edges_copy[j] == [self.way[len(self.way) - 1], (self.points[i][0], self.points[i][1])] or self.edges_copy[j] == [(self.points[i][0], self.points[i][1]), self.way[len(self.way) - 1]]:
+                                    self.current = self.edges_copy.pop(j)
+                                    new_edge = (self.points[i][0], self.points[i][1])
+                                    self.way.append(new_edge)
+                                    break
+
+            if len(self.edges_copy) == 0:
+                self.eventHandler.is_lockedc["left"] = True
+                self.done()
+                return True
+
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+            self.starting = False
+            self.edges_copy = list(self.edges)
+            self.way = []
+            if self.clicked:
+                self.clicked = False
+                return False
+
+    def render(self, counter):
+        super().render(counter)
+        for point in self.points:
+            pygame.draw.circle(self.screen, "Red", (self.pos[0] - 250 + point[0], point[1]), point[2])
+        for i in range(len(self.way) - 1):
+            point1 = (self.way[i][0] + self.pos[0] - 250, self.way[i][1])
+            point2 = (self.way[i+1][0] + self.pos[0] - 250, self.way[i+1][1])
+            pygame.draw.line(self.screen, "Red", point1, point2, 5)
+        if self.end:
+            return
+
+class PrimeCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/prime_card.png", screen, eventHandler, timer)
+        self.buttons = [False, False, False, False, False, False]
+        self.hover_surface = pygame.Surface((174, 124))
+        self.hover_surface.set_alpha(30)
+        self.hover_surface.set_colorkey((255, 255, 255))
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+
+            mousePos = self.eventHandler.mousePos
+            if 628 <= mousePos[1] <= 752:
+                if 403 <= mousePos[0] <= 575:
+                    self.buttons[3] = not self.buttons[3]
+                if 702 <= mousePos[0] <= 876:
+                    self.buttons[4] = not self.buttons[4]
+                if 1000 <= mousePos[0] <= 1174:
+                    self.buttons[5] = not self.buttons[5]
+            if 380 <= mousePos[1] <= 380 + 124:
+                if 403 <= mousePos[0] <= 575:
+                    self.buttons[0] = not self.buttons[0]
+                if 702 <= mousePos[0] <= 876:
+                    self.buttons[1] = not self.buttons[1]
+                if 1000 <= mousePos[0] <= 1174:
+                    self.buttons[2] = not self.buttons[2]
+
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+        if all(self.buttons[2:5]) and not self.buttons[0] and not self.buttons[1] and not self.buttons[5]:
+            self.done()
+            return True
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        if self.buttons[0]:
+            self.screen.blit(self.hover_surface, (403, 380))
+        if self.buttons[1]:
+            self.screen.blit(self.hover_surface, (702, 380))
+        if self.buttons[2]:
+            self.screen.blit(self.hover_surface, (1000, 380))
+        if self.buttons[3]:
+            self.screen.blit(self.hover_surface, (403, 628))
+        if self.buttons[4]:
+            self.screen.blit(self.hover_surface, (702, 628))
+        if self.buttons[5]:
+            self.screen.blit(self.hover_surface, (1000, 628))
+        mousePos = self.eventHandler.mousePos
+        if 628 <= mousePos[1] <= 752:
+            if 403 <= mousePos[0] <= 575:
+                self.screen.blit(self.hover_surface, (403, 628))
+            if 702 <= mousePos[0] <= 876:
+                self.screen.blit(self.hover_surface, (702, 628))
+            if 1000 <= mousePos[0] <= 1174:
+                self.screen.blit(self.hover_surface, (1000, 628))
+        if 380 <= mousePos[1] <= 380 + 124:
+            if 403 <= mousePos[0] <= 575:
+                self.screen.blit(self.hover_surface, (403, 380))
+            if 702 <= mousePos[0] <= 876:
+                self.screen.blit(self.hover_surface, (702, 380))
+            if 1000 <= mousePos[0] <= 1174:
+                self.screen.blit(self.hover_surface, (1000, 380))
+
+class PolygonCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/polygon_card.png", screen, eventHandler, timer)
+        self.sequence = []
+        for _ in range(6):
+            x = random.randint(0,12)
+            while x in self.sequence:
+                x = random.randint(0,12)
+            self.sequence.append(x)
+        self.guess = None
+        self.clicked = False
+        self.count = 0
+        self.font = pygame.font.SysFont("segoescript", 42)
+        self.hovered = [pygame.image.load("res/polygon_card0.png"),pygame.image.load("res/polygon_card1.png"),pygame.image.load("res/polygon_card2.png"),pygame.image.load("res/polygon_card3.png"),pygame.image.load("res/polygon_card4.png"),pygame.image.load("res/polygon_card5.png"),pygame.image.load("res/polygon_card6.png"),pygame.image.load("res/polygon_card7.png"),pygame.image.load("res/polygon_card8.png"),pygame.image.load("res/polygon_card9.png"),pygame.image.load("res/polygon_card10.png"),pygame.image.load("res/polygon_card11.png"),pygame.image.load("res/polygon_card12.png")]
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            mousePos = self.eventHandler.mousePos
+            if 416 <= mousePos[0] <= 515 and 352 <= mousePos[1] <= 533:
+                self.guess = 4
+                self.clicked = True
+            if 295 <= mousePos[0] <= 407 and 470 <= mousePos[1] <= 581:
+                self.guess = 12
+                self.clicked = True
+            if 334 <= mousePos[0] <= 416 and 613 <= mousePos[1] <= 694:
+                self.guess = 0
+                self.clicked = True
+            if 439 <= mousePos[0] <= 601 and 626 <= mousePos[1] <= 751:
+                self.guess = 5
+                self.clicked = True
+            if 540 <= mousePos[0] <= 710 and 494 <= mousePos[1] <= 575:
+                self.guess = 10
+                self.clicked = True
+            if 636 <= mousePos[0] <= 800 and 598 <= mousePos[1] <= 766:
+                self.guess = 8
+                self.clicked = True
+            if 812 <= mousePos[0] <= 991 and 642 <= mousePos[1] <= 756:
+                self.guess = 9
+                self.clicked = True
+            if 857 <= mousePos[0] <= 986 and 532 <= mousePos[1] <= 592:
+                self.guess = 2
+                self.clicked = True
+            if 1019 <= mousePos[0] <= 1227 and 704 <= mousePos[1] <= 785:
+                self.guess = 3
+                self.clicked = True
+            if 1218 <= mousePos[0] <= 1301 and 582 <= mousePos[1] <= 682:
+                self.guess = 7
+                self.clicked = True
+            if 1039 <= mousePos[0] <= 1193 and 501 <= mousePos[1] <= 658:
+                self.guess = 6
+                self.clicked = True
+            if 1175 <= mousePos[0] <= 1251 and 379 <= mousePos[1] <= 496:
+                self.guess = 1
+                self.clicked = True
+            if 1010 <= mousePos[0] <= 1115 and 346 <= mousePos[1] <= 491:
+                self.guess = 11
+                self.clicked = True
+        if self.clicked:
+            self.clicked = False
+            if self.guess == self.sequence[self.count]:
+                self.count += 1
+        if self.count == 6:
+            self.done()
+            return True
+
+
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+
+        mousePos = self.eventHandler.mousePos
+        if 416 <= mousePos[0] <= 515 and 352 <= mousePos[1] <= 533:
+            self.screen.blit(self.hovered[4], self.pos)
+            self.drawNumber(counter)
+        if 295 <= mousePos[0] <= 407 and 470 <= mousePos[1] <= 581:
+            self.screen.blit(self.hovered[12], self.pos)
+            self.drawNumber(counter)
+        if 334 <= mousePos[0] <= 416 and 613 <= mousePos[1] <= 694:
+            self.screen.blit(self.hovered[0], self.pos)
+            self.drawNumber(counter)
+        if 439 <= mousePos[0] <= 601 and 626 <= mousePos[1] <= 751:
+            self.screen.blit(self.hovered[5], self.pos)
+            self.drawNumber(counter)
+        if 540 <= mousePos[0] <= 710 and 494 <= mousePos[1] <= 575:
+            self.screen.blit(self.hovered[10], self.pos)
+            self.drawNumber(counter)
+        if 636 <= mousePos[0] <= 800 and 598 <= mousePos[1] <= 766:
+            self.screen.blit(self.hovered[8], self.pos)
+            self.drawNumber(counter)
+        if 812 <= mousePos[0] <= 991 and 642 <= mousePos[1] <= 756:
+            self.screen.blit(self.hovered[9], self.pos)
+            self.drawNumber(counter)
+        if 857 <= mousePos[0] <= 986 and 532 <= mousePos[1] <= 592:
+            self.screen.blit(self.hovered[2], self.pos)
+            self.drawNumber(counter)
+        if 1019 <= mousePos[0] <= 1227 and 704 <= mousePos[1] <= 785:
+            self.screen.blit(self.hovered[3], self.pos)
+            self.drawNumber(counter)
+        if 1218 <= mousePos[0] <= 1301 and 582 <= mousePos[1] <= 682:
+            self.screen.blit(self.hovered[7], self.pos)
+            self.drawNumber(counter)
+        if 1039 <= mousePos[0] <= 1193 and 501 <= mousePos[1] <= 658:
+            self.screen.blit(self.hovered[6], self.pos)
+            self.drawNumber(counter)
+        if 1175 <= mousePos[0] <= 1251 and 379 <= mousePos[1] <= 496:
+            self.screen.blit(self.hovered[1], self.pos)
+            self.drawNumber(counter)
+        if 1010 <= mousePos[0] <= 1115 and 346 <= mousePos[1] <= 491:
+            self.screen.blit(self.hovered[11], self.pos)
+            self.drawNumber(counter)
+
+        for i in range(6):
+            if i < self.count:
+                color = "Green"
+            else:
+                color = "Red"
+            number = self.font.render(str(self.sequence[i]), True, color)
+            self.screen.blit(number, (self.size[0]/2 - number.get_width()/2 - 190 + 65*i, self.pos[1] + 90))
+
+class TargetCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/target_card.png", screen, eventHandler, timer)
+        self.target = random.randint(0,3)
+        self.cover = pygame.Surface((150,150))
+        self.cover.fill((255, 236, 177))
+        self.count = 0
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_pressed["w"] and not self.eventHandler.is_lockedp["w"]:
+            self.eventHandler.is_lockedp["w"] = True
+            if self.target == 0:
+                self.newTarget()
+            else:
+                return False
+        if self.eventHandler.is_pressed["a"] and not self.eventHandler.is_lockedp["a"]:
+            self.eventHandler.is_lockedp["a"] = True
+            if self.target == 1:
+                self.newTarget()
+            else:
+                return False
+        if self.eventHandler.is_pressed["s"] and not self.eventHandler.is_lockedp["s"]:
+            self.eventHandler.is_lockedp["s"] = True
+            if self.target == 2:
+                self.newTarget()
+            else:
+                return False
+        if self.eventHandler.is_pressed["d"] and not self.eventHandler.is_lockedp["d"]:
+            self.eventHandler.is_lockedp["d"] = True
+            if self.target == 3:
+                self.newTarget()
+            else:
+                return False
+
+        if self.count == 10:
+            self.done()
+            return True
+
+        if not self.eventHandler.is_pressed["w"]:
+            self.eventHandler.is_lockedp["w"] = False
+        if not self.eventHandler.is_pressed["a"]:
+            self.eventHandler.is_lockedp["a"] = False
+        if not self.eventHandler.is_pressed["s"]:
+            self.eventHandler.is_lockedp["s"] = False
+        if not self.eventHandler.is_pressed["d"]:
+            self.eventHandler.is_lockedp["d"] = False
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        if self.target != 3:
+            self.screen.blit(self.cover, (946, 489))
+        if self.target != 2:
+            self.screen.blit(self.cover, (728, 646))
+        if self.target != 1:
+            self.screen.blit(self.cover, (514, 489))
+        if self.target != 0:
+            self.screen.blit(self.cover, (729, 341))
+    def newTarget(self):
+        new_target = random.randint(0, 3)
+        while new_target == self.target:
+            new_target = random.randint(0, 3)
+        self.target = new_target
+        self.count += 1
+
+class PasswordCard1(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/password_card1.png", screen, eventHandler, timer)
+        self.password = ""
+        self.font = pygame.font.SysFont("segoescript", 75)
+        self.rule_font = pygame.font.SysFont("segoescript", 25)
+        self.has_number = False
+        self.has_j = False
+        self.has_z = False
+        self.has_q = False
+        self.rule = False
+        self.number_of = dict()
+
+        self.hover_surface = pygame.Surface((407, 72))
+        self.hover_surface.set_alpha(30)
+        self.hover_surface.set_colorkey((255, 255, 255))
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            mousePos = self.eventHandler.mousePos
+            if 578 <= mousePos[0] <= 985 and 552 <= mousePos[1] <= 624:
+                if self.has_number and self.has_j and self.has_z and self.has_q and self.rule and len(self.password) == 10:
+                    Card.holding = self.password
+                    self.done()
+                    return True
+                else:
+                    return False
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+
+        for button in self.eventHandler.is_pressed:
+            if len(button) > 1:
+                continue
+            if self.eventHandler.is_pressed[button] and not self.eventHandler.is_lockedp[button]:
+                self.eventHandler.is_lockedp[button] = True
+                if len(self.password) < 10:
+                    self.password += button
+                    if button in self.number_of.keys():
+                        self.number_of[button] += 1
+                    else:
+                        self.number_of[button] = 1
+            if not self.eventHandler.is_pressed[button]:
+                self.eventHandler.is_lockedp[button] = False
+        if self.eventHandler.is_pressed["back"] and not self.eventHandler.is_lockedp["back"]:
+            self.eventHandler.is_lockedp["back"] = True
+            if len(self.password) > 0:
+                self.number_of[self.password[len(self.password) - 1]] -= 1
+                self.password = self.password[:len(self.password) - 1]
+        if not self.eventHandler.is_pressed["back"]:
+            self.eventHandler.is_lockedp["back"] = False
+
+        if "q" in self.number_of.keys():
+            if self.number_of["q"] > 0:
+                self.has_q = True
+            else:
+                self.has_q = False
+        if "j" in self.number_of.keys():
+            if self.number_of["j"] > 0:
+                self.has_j = True
+            else:
+                self.has_j = False
+        if "z" in self.number_of.keys():
+            if self.number_of["z"] > 0:
+                self.has_z = True
+            else:
+                self.has_z = False
+        for letter in self.password:
+            if not letter.isalpha():
+                self.has_number = True
+                break
+        else:
+            self.has_number = False
+        for key in self.number_of:
+            if self.number_of[key] > 2:
+                self.rule = False
+                break
+        else:
+            self.rule = True
+
+    def render(self, counter):
+        super().render(counter)
+        if len(self.password) == 10:
+            rule1 = self.rule_font.render("must be 10 characters long", True, "Green")
+        else:
+            rule1 = self.rule_font.render("must be 10 characters long", True, "Red")
+
+        if self.has_number:
+            rule2 = self.rule_font.render("must include a number", True, "Green")
+        else:
+            rule2 = self.rule_font.render("must include a number", True, "Red")
+
+        if self.has_j and self.has_q and self.has_z:
+            rule3 = self.rule_font.render("must include j, q and z", True, "Green")
+        else:
+            rule3 = self.rule_font.render("must include j, q and z", True, "Red")
+
+        if self.rule and len(self.password) == 10:
+            rule4 = self.rule_font.render("must not repeat a letter more than once", True, "Green")
+        else:
+            rule4 = self.rule_font.render("must not repeat a letter more than once", True, "Red")
+
+        self.screen.blit(rule1, (self.pos[0] + self.surface_size[0]/2 - rule1.get_width()/2 - 70, self.pos[1] + 335))
+        self.screen.blit(rule2, (self.pos[0] + self.surface_size[0] / 2 - rule1.get_width() / 2 - 70, self.pos[1] + 335 + 45))
+        self.screen.blit(rule3, (self.pos[0] + self.surface_size[0] / 2 - rule1.get_width() / 2 - 70, self.pos[1] + 335 + 90))
+        self.screen.blit(rule4, (self.pos[0] + self.surface_size[0] / 2 - rule1.get_width() / 2 - 70, self.pos[1] + 335 + 135))
+        password = self.font.render(self.password, True, "Black")
+        self.screen.blit(password, (self.pos[0] + self.surface_size[0]/2 - password.get_width()/2 - 5, self.pos[1] + 140))
+        if self.end:
+            return
+
+        mousePos = self.eventHandler.mousePos
+        if 578 <= mousePos[0] <= 985 and 552 <= mousePos[1] <= 624:
+            self.screen.blit(self.hover_surface, (578, 552))
+
+class PasswordCard2(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/password_card2.png", screen, eventHandler, timer)
+        self.cover = pygame.Surface((664 - 469, 646 - 638))
+        self.cover.fill((255, 236, 177))
+        self.point_cover = pygame.Surface((62, 62))
+        self.point_cover.fill((255, 222, 134))
+        self.hover = False
+        self.clicks = 50
+        self.show = False
+        self.challcover = pygame.Surface((1137 - 480, 791 - 684))
+        self.challcover.fill((255, 236, 177))
+        self.leftfont = pygame.font.SysFont("segoescript", 35)
+        self.password = ""
+        self.faillock = False
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        mousePos = self.eventHandler.mousePos
+        if 468 <= mousePos[0] <= 666 and 611 <= mousePos[1] <= 638:
+            self.hover = True
+        else:
+            self.hover = False
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            if self.show and self.clicks > 0:
+                self.clicks -= 1
+            if self.hover:
+                self.show = True
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+        for button in self.eventHandler.is_pressed:
+            if len(button) > 1:
+                continue
+            if self.eventHandler.is_pressed[button] and not self.eventHandler.is_lockedp[button]:
+                self.eventHandler.is_lockedp[button] = True
+                if len(self.password) < 10:
+                    self.password += button
+            if not self.eventHandler.is_pressed[button]:
+                self.eventHandler.is_lockedp[button] = False
+        if self.eventHandler.is_pressed["back"] and not self.eventHandler.is_lockedp["back"]:
+            self.eventHandler.is_lockedp["back"] = True
+            if len(self.password) > 0:
+                self.password = self.password[:len(self.password) - 1]
+        if not self.eventHandler.is_pressed["back"]:
+            self.eventHandler.is_lockedp["back"] = False
+        if len(self.password) < 10 and self.faillock:
+            self.faillock = False
+        if self.password == Card.holding:
+            self.done()
+            return True
+        if len(self.password) == 10 and not self.faillock:
+            self.faillock = True
+            return False
+    def render(self, counter):
+        super().render(counter)
+        if not self.show:
+            self.screen.blit(self.challcover, (self.pos[0] - 250 + 480, 684))
+        else:
+            nums_left = self.leftfont.render(str(self.clicks), True, "Red")
+            if self.clicks >= 10:
+                self.screen.blit(nums_left, (self.pos[0] - 250 + 612, 680))
+            else:
+                self.screen.blit(nums_left, (self.pos[0] - 250 + 622, 680))
+        if self.clicks == 0:
+            password = self.leftfont.render(Card.holding, True, "Black")
+            self.screen.blit(password, (self.pos[0] - 250 + 840, 732))
+        for i in range(10 - len(self.password)):
+            self.screen.blit(self.point_cover, (489 + 62*9 - 62*i, 508))
+        if self.end:
+            return
+        if not self.hover:
+            self.screen.blit(self.cover, (469, 638))

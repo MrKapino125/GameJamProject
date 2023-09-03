@@ -10,7 +10,7 @@ class Soundloader:
         }
         mixer.Sound.set_volume(self.sfx["wrong"], 0.065 * self.sfx_volume)
         mixer.Sound.set_volume(self.sfx["correct"], 0.20 * self.sfx_volume)
-        mixer.music.load("sounds/background.mp3")
+        mixer.music.load("sounds/background.wav")
         mixer.music.set_volume(0.02 * self.volume)
         self.running = False
 

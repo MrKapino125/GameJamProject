@@ -3,6 +3,8 @@ import card
 class Cardloader:
     def loadcard(self, id, screen, eventhandler, timer):
         match id:
+            case -1:
+                return 26
             case 0:
                 return card.ClickCard(screen, eventhandler, timer)
             case 1:
@@ -43,4 +45,17 @@ class Cardloader:
                 return card.ReplikaCard(screen, eventhandler, timer)
             case 19:
                 return card.AsteroidsCard(screen, eventhandler, timer)
+            case 20:
+                return card.GraphCard(screen, eventhandler, timer)
+            case 21:
+                return card.PrimeCard(screen, eventhandler, timer)
+            case 22:
+                return card.PolygonCard(screen, eventhandler, timer)
+            case 23:
+                return card.TargetCard(screen, eventhandler, timer)
+            case 24:
+                return card.PasswordCard1(screen, eventhandler, timer)
+            case 25:
+                return card.PasswordCard2(screen, eventhandler, timer)
+
 
