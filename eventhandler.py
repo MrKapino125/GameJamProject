@@ -62,9 +62,9 @@ class Eventhandler:
                     self.is_pressed["strg"] = True
                 if uni == 8:
                     self.is_pressed["back"] = True
-                if (uni > 122 or uni < 97) and (uni < 48 or uni > 57):
-                    break
-                self.is_pressed[chr(uni)] = True
+                if 122 >= uni >= 97 or 48 <= uni <= 57:
+                    self.is_pressed[chr(uni)] = True
+
             if event.type == pygame.KEYUP:
                 uni = event.key
                 if uni == 1073742049:
@@ -73,9 +73,8 @@ class Eventhandler:
                     self.is_pressed["strg"] = False
                 if uni == 8:
                     self.is_pressed["back"] = False
-                if (uni > 122 or uni < 97) and (uni < 48 or uni > 57):
-                    break
-                self.is_pressed[chr(uni)] = False
+                if 122 >= uni >= 97 or 48 <= uni <= 57:
+                    self.is_pressed[chr(uni)] = False
 
             if event.type == pygame.MOUSEMOTION:
                 self.mousePos = event.pos
