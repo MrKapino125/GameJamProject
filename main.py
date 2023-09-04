@@ -13,7 +13,7 @@ pygame.mixer.init()
 width = 1600
 height = 900
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("CardGame")
+pygame.display.set_caption("Chaotic Cards")
 clock = pygame.time.Clock()
 eventHandler = eventhandler.Eventhandler()
 background = pygame.image.load("res/gdbackground4compri.jpg")
