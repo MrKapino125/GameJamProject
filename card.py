@@ -33,6 +33,7 @@ class Card:
                 self.win = False
 
     def render(self, counter):
+        counter = 22
         self.screen.blit(self.surface, self.pos)
         self.drawNumber(counter)
     def done(self):
@@ -1596,11 +1597,17 @@ class OrderCard(Card):
         self.hover_surface = pygame.Surface((174, 124))
         self.hover_surface.set_alpha(30)
         self.hover_surface.set_colorkey((255, 255, 255))
+        self.start = timer.time
+        self.hintfont = pygame.font.SysFont("segoescript", 15)
+        self.hint = False
+        self.hinttxt = self.hintfont.render("hint: the number appearing on screen from a certain button corresponds to its place in the sequence", True, "Red")
 
     def tick(self):
         super().tick()
         if self.end:
             return
+        if self.timer.time - self.start > 30:
+            self.hint = True
         if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
             self.eventHandler.is_lockedc["left"] = True
 
@@ -1637,7 +1644,6 @@ class OrderCard(Card):
             self.started = False
             self.inputs = 0
             self.sequence = []
-            return False
         if self.sequence == self.answer:
             self.done()
             return True
@@ -1645,6 +1651,20 @@ class OrderCard(Card):
             self.eventHandler.is_lockedc["left"] = False
     def render(self, counter):
         super().render(counter)
+        if self.inputs > 0:
+            self.screen.blit(self.hover_surface, (self.pos[0] - 250 + 702, 628))
+        if self.inputs > 1:
+            self.screen.blit(self.hover_surface, (self.pos[0] - 250 + 1000, 380))
+        if self.inputs > 2:
+            self.screen.blit(self.hover_surface, (self.pos[0] - 250 + 403, 628))
+        if self.inputs > 3:
+            self.screen.blit(self.hover_surface, (self.pos[0] - 250 + 403, 380))
+        if self.inputs > 4:
+            self.screen.blit(self.hover_surface, (self.pos[0] - 250 + 1000, 628))
+        if self.inputs > 5:
+            self.screen.blit(self.hover_surface, (self.pos[0] - 250 + 702, 380))
+        if self.hint:
+            self.screen.blit(self.hinttxt, (self.pos[0] + self.surface_size[0]/2 - self.hinttxt.get_width()/2, self.pos[1] + self.surface_size[1] - 80))
         if self.end:
             return
         mousePos = self.eventHandler.mousePos
@@ -1668,7 +1688,7 @@ class OrderCard(Card):
                 if 403 <= mousePos[0] <= 575:
                     three_surface = pygame.Surface((200, 80))
                     three_surface.fill((255, 253, 219))
-                    self.screen.blit(three_surface, (1019, 103))
+                    self.screen.blit(three_surface, (1019, 90))
                     three_font = pygame.font.SysFont("segoescript", 75).render("3", True, "Red")
                     self.screen.blit(three_font, (1150, 75))
                 if 702 <= mousePos[0] <= 876:
@@ -1690,9 +1710,9 @@ class OrderCard(Card):
                     six_font = pygame.font.SysFont("segoescript", 30).render("6", True, (120, 120, 120))
                     self.screen.blit(six_font, (313, 118))
                 if 1000 <= mousePos[0] <= 1174:
-                    two_surface = pygame.Surface((50, 50))
+                    two_surface = pygame.Surface((74, 60))
                     two_surface.fill((236, 192, 94))
-                    self.screen.blit(two_surface, (274, 769))
+                    self.screen.blit(two_surface, (260, 757))
                     self.drawNumber(2)
         if not self.eventHandler.is_clicked["left"]:
             state.order_card_block = False
