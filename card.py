@@ -33,7 +33,6 @@ class Card:
                 self.win = False
 
     def render(self, counter):
-        counter = 22
         self.screen.blit(self.surface, self.pos)
         self.drawNumber(counter)
     def done(self):
@@ -108,18 +107,31 @@ class SliceCard(Card):
 
 class MathCard(Card):
     def __init__(self, screen, eventHandler, timer):
-        cards = {"0": "res/math_card.png",
-                 "1": "res/math_card.png",
-                 "2": "res/math_card.png",
-                 "3": "res/math_card.png",
-                 "4": "res/math_card.png",
-                 "5": "res/math_card.png",
-                 "6": "res/math_card.png",}
+        cards = {"0": "res/math_card0.png",
+                 "1": "res/math_card1.png",
+                 "2": "res/math_card2.png",
+                 "3": "res/math_card3.png",
+                 "4": "res/math_card4.png",
+                 "5": "res/math_card5.png",
+                 "6": "res/math_card6.png",}
         self.x = random.randint(0,6)
 
         super().__init__(cards[str(self.x)], screen, eventHandler, timer)
-        if self.x in range(7):
-            self.answer = 0
+        match self.x:
+            case 0:
+                self.answer = 0
+            case 1:
+                self.answer = 1
+            case 2:
+                self.answer = 2
+            case 3:
+                self.answer = 0
+            case 4:
+                self.answer = 1
+            case 5:
+                self.answer = 1
+            case 6:
+                self.answer = 0
         self.hover_surface = pygame.Surface((174, 124))
         self.hover_surface.set_alpha(30)
         self.hover_surface.set_colorkey((255, 255, 255))
@@ -242,16 +254,12 @@ class RememberCard(Card):
 class MinefieldCard(Card):
     def __init__(self, screen, eventHandler, timer):
         cards = {"0": "res/minefield_card.png",
-                 "1": "res/minefield_card.png",
-                 "2": "res/minefield_card.png",
-                 "3": "res/minefield_card.png",
-                 "4": "res/minefield_card.png",
-                 "5": "res/minefield_card.png",
-                 "6": "res/minefield_card.png", }
-        self.x = random.randint(0, 6)
+                 "1": "res/minefield_card1.png",
+                 "2": "res/minefield_card2.png", }
+        self.x = random.randint(0, 2)
 
         super().__init__(cards[str(self.x)], screen, eventHandler, timer)
-        if self.x in range(7):
+        if self.x == 0:
             self.field = [[False, False, True, False, False, True, False],
                           [False, True, False, False, False, True, False],
                           [False, True, False, True, False, False, False],
@@ -259,6 +267,22 @@ class MinefieldCard(Card):
                           [False, False, True, True, False, False, False],
                           [False, True, False, False, False, True, True],
                           [False, True, False, True, False, False, False]]
+        elif self.x == 1:
+            self.field = [[True, False, True, False, False, False, False],
+                          [False, False, False, True, False, False, False],
+                          [False, True, False, False, False, False, True],
+                          [False, False, True, False, True, False, False],
+                          [False, True, False, True, False, True, False],
+                          [False, True, True, False, True, False, False],
+                          [False, True, False, False, False, False, False]]
+        else:
+            self.field = [[False, False, True, False, True, False, False],
+                          [False, True, False, False, False, False, True],
+                          [False, False, True, False, True, False, False],
+                          [False, True, True, False, False, True, False],
+                          [True, False, False, False, True, False, False],
+                          [False, False, True, True, False, True, False],
+                          [False, True, False, False, False, False, False]]
         self.player_pos = [6,0]
         self.font = pygame.font.SysFont("segoescript", 50)
         self.xtxt = self.font.render("x", True, "Red")
@@ -447,7 +471,18 @@ class ImpossiblequizCard(Card):
 
 class NotclickbuttonCard(Card):
     def __init__(self, screen, eventHandler, timer):
-        super().__init__("res/notclickbutton_card.png", screen, eventHandler, timer)
+        cards = {"0": "res/notclickbutton_card.png",
+                 "1": "res/notclickbutton_card1.png",
+                 "2": "res/notclickbutton_card2.png",}
+        self.x = random.randint(0, 2)
+
+        super().__init__(cards[str(self.x)], screen, eventHandler, timer)
+        if self.x == 0:
+            self.answer = 0
+        if self.x == 1:
+            self.answer = 2
+        if self.x == 2:
+            self.answer = 0
         self.hover_surface = pygame.Surface((174, 124))
         self.hover_surface.set_alpha(30)
         self.hover_surface.set_colorkey((255, 255, 255))
@@ -462,12 +497,23 @@ class NotclickbuttonCard(Card):
             mousePos = self.eventHandler.mousePos
             if 628 <= mousePos[1] <= 752:
                 if 403 <= mousePos[0] <= 575:
-                    self.done()
-                    return True
+                    if self.answer == 0:
+                        self.done()
+                        return True
+                    else:
+                        return False
                 if 702 <= mousePos[0] <= 876:
-                    return False
+                    if self.answer == 1:
+                        self.done()
+                        return True
+                    else:
+                        return False
                 if 1000 <= mousePos[0] <= 1174:
-                    return False
+                    if self.answer == 2:
+                        self.done()
+                        return True
+                    else:
+                        return False
         if not self.eventHandler.is_clicked["left"]:
             self.eventHandler.is_lockedc["left"] = False
 
@@ -777,11 +823,20 @@ class AlphabetCard(Card):
         self.hover_surface.set_alpha(30)
         self.hover_surface.set_colorkey((255, 255, 255))
         self.hover_interface = pygame.image.load("res/interface_hovered.png")
+        self.hintfont = pygame.font.SysFont("segoescript", 25)
+        self.hinttxt = self.hintfont.render("hint: There is a C somewhere", True, "Red")
+        self.hint = False
+        self.start = None
 
     def tick(self):
         super().tick()
         if self.end:
             return
+        if self.start is None:
+            self.start = self.timer.time
+        if self.timer.time - self.start > 30:
+            self.hint = True
+
 
         if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
             self.eventHandler.is_lockedc["left"] = True
@@ -803,6 +858,8 @@ class AlphabetCard(Card):
 
     def render(self, counter):
         super().render(counter)
+        if self.hint:
+            self.screen.blit(self.hinttxt, (self.pos[0] + self.surface_size[0]/2 - self.hinttxt.get_width()/2, self.pos[1] + self.surface_size[1]/2 - 70))
         if self.end:
             return
         mousePos = self.eventHandler.mousePos
@@ -816,6 +873,18 @@ class AlphabetCard(Card):
         if 77 <= mousePos[1] <= 177:
             if 763 <= mousePos[0] <= 843:
                 self.screen.blit(self.hover_interface, (250, 37.5 / 2))
+                time = self.timer.time
+                if time > 1000:
+                    time = str(int(time))
+                else:
+                    time = str(int(time * 10) / 10)
+                timetxt = pygame.font.SysFont("segoescript", 75).render(time, True, "Red")
+                cards_lefttxt = pygame.font.SysFont("segoescript", 75).render(str(31 - counter), True, "Red")
+                self.screen.blit(timetxt, (400, 75))
+                if 31 - counter < 10:
+                    self.screen.blit(cards_lefttxt, (1150, 75))
+                else:
+                    self.screen.blit(cards_lefttxt, (1100, 75))
 
 class ReactionCard(Card):
     def __init__(self, screen, eventHandler, timer):
@@ -1117,20 +1186,26 @@ class GraphCard(Card):
 
 class PrimeCard(Card):
     def __init__(self, screen, eventHandler, timer):
-        cards = {"0": "res/prime_card.png",
-                 "1": "res/prime_card.png",
-                 "2": "res/prime_card.png",
-                 "3": "res/prime_card.png",
-                 "4": "res/prime_card.png",
-                 "5": "res/prime_card.png",
-                 "6": "res/prime_card.png", }
-        self.x = random.randint(0, 6)
+        cards = {"0": "res/prime_card1.png",
+                 "1": "res/prime_card4.png",
+                 "2": "res/prime_card2.png",
+                 "3": "res/prime_card3.png", }
+        self.x = random.randint(0, 3)
 
         super().__init__(cards[str(self.x)], screen, eventHandler, timer)
         self.buttons = [False, False, False, False, False, False]
-        if self.x in range(7):
-            self.correct = self.buttons[2:5]
-            self.wrong = self.buttons[:2] + [self.buttons[5]]
+        if self.x == 0:
+            self.correct = [self.buttons[0]] + self.buttons[2:4] + [self.buttons[5]]
+            self.wrong = [self.buttons[1]] + [self.buttons[4]]
+        if self.x == 1:
+            self.correct = self.buttons[:2] + self.buttons[4:]
+            self.wrong = self.buttons[2:4]
+        if self.x == 2:
+            self.correct = [self.buttons[0]] + [self.buttons[5]]
+            self.wrong = self.buttons[1:5]
+        if self.x == 3:
+            self.correct = [self.buttons[0]] + self.buttons[3:]
+            self.wrong = self.buttons[1:3]
         self.hover_surface = pygame.Surface((174, 124))
         self.hover_surface.set_alpha(30)
         self.hover_surface.set_colorkey((255, 255, 255))
@@ -1160,9 +1235,18 @@ class PrimeCard(Card):
 
         if not self.eventHandler.is_clicked["left"]:
             self.eventHandler.is_lockedc["left"] = False
-        if self.x in range(7):
-            self.correct = self.buttons[2:5]
-            self.wrong = self.buttons[:2] + [self.buttons[5]]
+        if self.x == 0:
+            self.correct = [self.buttons[0]] + self.buttons[2:4] + [self.buttons[5]]
+            self.wrong = [self.buttons[1]] + [self.buttons[4]]
+        if self.x == 1:
+            self.correct = self.buttons[:2] + self.buttons[4:]
+            self.wrong = self.buttons[2:4]
+        if self.x == 2:
+            self.correct = [self.buttons[0]] + [self.buttons[5]]
+            self.wrong = self.buttons[1:5]
+        if self.x == 3:
+            self.correct = [self.buttons[0]] + self.buttons[3:]
+            self.wrong = self.buttons[1:3]
         if all(self.correct) and not any(self.wrong):
             self.done()
             return True
@@ -1566,6 +1650,7 @@ class PasswordCard2(Card):
             return True
         if len(self.password) == 10 and not self.faillock:
             self.faillock = True
+            return False
 
     def render(self, counter):
         super().render(counter)
@@ -1597,15 +1682,17 @@ class OrderCard(Card):
         self.hover_surface = pygame.Surface((174, 124))
         self.hover_surface.set_alpha(30)
         self.hover_surface.set_colorkey((255, 255, 255))
-        self.start = timer.time
+        self.start = None
         self.hintfont = pygame.font.SysFont("segoescript", 15)
         self.hint = False
-        self.hinttxt = self.hintfont.render("hint: the number appearing on screen from a certain button corresponds to its place in the sequence", True, "Red")
+        self.hinttxt = self.hintfont.render("hint: the number appearing on screen from clicking a button corresponds to its place in the sequence", True, "Red")
 
     def tick(self):
         super().tick()
         if self.end:
             return
+        if self.start is None:
+            self.start = self.timer.time
         if self.timer.time - self.start > 30:
             self.hint = True
         if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
@@ -1705,7 +1792,7 @@ class OrderCard(Card):
                 if 403 <= mousePos[0] <= 575:
                     four_font = pygame.font.SysFont("segoescript", 70)
                     four = four_font.render("4", True, (243, 224, 165))
-                    self.screen.blit(four, (902, 698))
+                    self.screen.blit(four, (902, 670))
                 if 702 <= mousePos[0] <= 876:
                     six_font = pygame.font.SysFont("segoescript", 30).render("6", True, (120, 120, 120))
                     self.screen.blit(six_font, (313, 118))
@@ -1725,7 +1812,7 @@ class TrailCard(Card):
                  "3": "res/trail_card.png",
                  "4": "res/trail_card.png",
                  "5": "res/trail_card.png",
-                 "6": "res/trail_card.png", }
+                 "6": "res/trail_card.png"}
         self.x = random.randint(0, 6)
 
         super().__init__(cards[str(self.x)], screen, eventHandler, timer)
@@ -1765,21 +1852,24 @@ class TrailCard(Card):
 class ColorwordCard(Card):
     def __init__(self, screen, eventHandler, timer):
         cards = {"0": "res/colorword_card.png",
-                 "1": "res/colorword_card.png",
-                 "2": "res/colorword_card.png",
-                 "3": "res/colorword_card.png",
-                 "4": "res/colorword_card.png",
-                 "5": "res/colorword_card.png",
-                 "6": "res/colorword_card.png", }
-        self.x = random.randint(0, 6)
+                 "1": "res/colorword_card1.png",
+                 "2": "res/colorword_card2.png",
+                 "3": "res/colorword_card3.png",}
+        self.x = random.randint(0, 3)
 
         super().__init__(cards[str(self.x)], screen, eventHandler, timer)
         self.hover_surface = pygame.Surface((148, 109))
         self.hover_surface.set_alpha(30)
         self.hover_surface.set_colorkey((255, 255, 255))
         self.buttons = [False, False, False, False, False]
-        if self.x in range(7):
+        if self.x == 0:
             self.sequence = [1,4,3,1,2]
+        if self.x == 1:
+            self.sequence = [0,4,1,0,4]
+        if self.x == 2:
+            self.sequence = [2,3,1,0,4]
+        if self.x == 3:
+            self.sequence = [0,4,0,0,0]
         self.level = 0
         self.check = pygame.image.load("res/check.png")
         self.check = pygame.transform.scale(self.check, (self.check.get_width()/6, self.check.get_height()/6))
@@ -1870,7 +1960,7 @@ class MousebuttonsCard(Card):
             text = self.font.render("right ", True, "Red")
             self.screen.blit(text, (self.pos[0] + self.surface_size[0] / 2 - text.get_width() / 2, 642 - text.get_height() / 2))
         if self.started:
-            self.screen.blit(self.cover, (554, 731))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + 554, 731))
         if self.end:
             return
         if self.started:
