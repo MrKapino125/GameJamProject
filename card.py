@@ -3,6 +3,9 @@ import random
 
 import pygame
 
+import state
+
+
 class Card:
     holding = "testtest12"
     def __init__(self, url, screen, eventHandler, timer):
@@ -1525,3 +1528,113 @@ class PasswordCard2(Card):
             return
         if not self.hover:
             self.screen.blit(self.cover, (469, 638))
+
+class OrderCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/order_card.png", screen, eventHandler, timer)
+        self.answer = [5, 3, 4, 1, 6, 2]
+        self.started = False
+        self.sequence = []
+        self.inputs = 0
+        self.hover_surface = pygame.Surface((174, 124))
+        self.hover_surface.set_alpha(30)
+        self.hover_surface.set_colorkey((255, 255, 255))
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+
+            mousePos = self.eventHandler.mousePos
+            if 628 <= mousePos[1] <= 752:
+                if 403 <= mousePos[0] <= 575:
+                    self.sequence.append(4)
+                    self.started = True
+                    self.inputs += 1
+                if 702 <= mousePos[0] <= 876:
+                    self.sequence.append(5)
+                    self.started = True
+                    self.inputs += 1
+                if 1000 <= mousePos[0] <= 1174:
+                    self.sequence.append(6)
+                    self.started = True
+                    self.inputs += 1
+            if 380 <= mousePos[1] <= 380 + 124:
+                if 403 <= mousePos[0] <= 575:
+                    self.sequence.append(1)
+                    self.started = True
+                    self.inputs += 1
+                if 702 <= mousePos[0] <= 876:
+                    self.sequence.append(2)
+                    self.started = True
+                    self.inputs += 1
+                if 1000 <= mousePos[0] <= 1174:
+                    self.sequence.append(3)
+                    self.started = True
+                    self.inputs += 1
+
+
+        if self.sequence != self.answer[:self.inputs]:
+            self.started = False
+            self.inputs = 0
+            self.sequence = []
+        if self.sequence == self.answer:
+            self.done()
+            return True
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        mousePos = self.eventHandler.mousePos
+        if 628 <= mousePos[1] <= 752:
+            if 403 <= mousePos[0] <= 575:
+                self.screen.blit(self.hover_surface, (403, 628))
+            if 702 <= mousePos[0] <= 876:
+                self.screen.blit(self.hover_surface, (702, 628))
+            if 1000 <= mousePos[0] <= 1174:
+                self.screen.blit(self.hover_surface, (1000, 628))
+        if 380 <= mousePos[1] <= 380 + 124:
+            if 403 <= mousePos[0] <= 575:
+                self.screen.blit(self.hover_surface, (403, 380))
+            if 702 <= mousePos[0] <= 876:
+                self.screen.blit(self.hover_surface, (702, 380))
+            if 1000 <= mousePos[0] <= 1174:
+                self.screen.blit(self.hover_surface, (1000, 380))
+        if self.eventHandler.is_clicked["left"]:
+            mousePos = self.eventHandler.mousePos
+            if 628 <= mousePos[1] <= 752:
+                if 403 <= mousePos[0] <= 575:
+                    three_surface = pygame.Surface((200, 80))
+                    three_surface.fill((255, 253, 219))
+                    self.screen.blit(three_surface, (1019, 103))
+                    three_font = pygame.font.SysFont("segoescript", 75).render("3", True, "Red")
+                    self.screen.blit(three_font, (1150, 75))
+                if 702 <= mousePos[0] <= 876:
+                    one_font = pygame.font.SysFont("segoescript", 100)
+                    one = one_font.render("1", True, (246, 147, 244))
+                    self.screen.blit(one, (1470, 705))
+                if 1000 <= mousePos[0] <= 1174:
+                    five_surface = pygame.Surface((50, 55))
+                    five_surface.fill((255, 236, 177))
+                    self.screen.blit(five_surface, (667, 539))
+                    five_font = pygame.font.SysFont("segoescript", 72).render("5", True, "Red")
+                    self.screen.blit(five_font, (663, 508))
+            if 380 <= mousePos[1] <= 380 + 124:
+                if 403 <= mousePos[0] <= 575:
+                    four_font = pygame.font.SysFont("segoescript", 70)
+                    four = four_font.render("4", True, (243, 224, 165))
+                    self.screen.blit(four, (902, 698))
+                if 702 <= mousePos[0] <= 876:
+                    six_font = pygame.font.SysFont("segoescript", 30).render("6", True, (120, 120, 120))
+                    self.screen.blit(six_font, (313, 118))
+                if 1000 <= mousePos[0] <= 1174:
+                    two_surface = pygame.Surface((50, 50))
+                    two_surface.fill((236, 192, 94))
+                    self.screen.blit(two_surface, (274, 769))
+                    self.drawNumber(2)
+        if not self.eventHandler.is_clicked["left"]:
+            state.order_card_block = False

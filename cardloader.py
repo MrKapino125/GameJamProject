@@ -57,5 +57,6 @@ class Cardloader:
                 return card.PasswordCard1(screen, eventhandler, timer)
             case 25:
                 return card.PasswordCard2(screen, eventhandler, timer)
-
+            case 26:
+                return card.OrderCard(screen, eventhandler, timer)
 
