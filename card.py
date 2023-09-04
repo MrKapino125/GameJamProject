@@ -107,7 +107,18 @@ class SliceCard(Card):
 
 class MathCard(Card):
     def __init__(self, screen, eventHandler, timer):
-        super().__init__("res/math_card.png", screen, eventHandler, timer)
+        cards = {"0": "res/math_card.png",
+                 "1": "res/math_card.png",
+                 "2": "res/math_card.png",
+                 "3": "res/math_card.png",
+                 "4": "res/math_card.png",
+                 "5": "res/math_card.png",
+                 "6": "res/math_card.png",}
+        self.x = random.randint(0,6)
+
+        super().__init__(cards[str(self.x)], screen, eventHandler, timer)
+        if self.x in range(7):
+            self.answer = 0
         self.hover_surface = pygame.Surface((174, 124))
         self.hover_surface.set_alpha(30)
         self.hover_surface.set_colorkey((255, 255, 255))
@@ -123,12 +134,23 @@ class MathCard(Card):
             mousePos = self.eventHandler.mousePos
             if 628 <= mousePos[1] <= 752:
                 if 403 <= mousePos[0] <= 575:
-                    self.done()
-                    return True
+                    if self.answer == 0:
+                        self.done()
+                        return True
+                    else:
+                        return False
                 if 702 <= mousePos[0] <= 876:
-                    return False
+                    if self.answer == 1:
+                        self.done()
+                        return True
+                    else:
+                        return False
                 if 1000 <= mousePos[0] <= 1174:
-                    return False
+                    if self.answer == 2:
+                        self.done()
+                        return True
+                    else:
+                        return False
         if not self.eventHandler.is_clicked["left"]:
             self.eventHandler.is_lockedc["left"] = False
 
@@ -147,11 +169,21 @@ class MathCard(Card):
 
 class RememberCard(Card):
     def __init__(self, screen, eventHandler, timer):
-        super().__init__("res/memory_card.png", screen, eventHandler, timer)
+        cards = {"0": "res/memory_card.png",
+                 "1": "res/memory_card.png",
+                 "2": "res/memory_card.png",
+                 "3": "res/memory_card.png",
+                 "4": "res/memory_card.png",
+                 "5": "res/memory_card.png",
+                 "6": "res/memory_card.png", }
+        self.x = random.randint(0, 6)
+
+        super().__init__(cards[str(self.x)], screen, eventHandler, timer)
         self.started = False
         self.sequence = []
         self.inputs = 0
-        self.answer = [2,2,1,2,3,1,3]
+        if self.x in range(7):
+            self.answer = [2,2,1,2,3,1,3]
         self.hover_surface = pygame.Surface((174, 124))
         self.hover_surface.set_alpha(30)
         self.hover_surface.set_colorkey((255, 255, 255))
@@ -208,15 +240,24 @@ class RememberCard(Card):
 
 class MinefieldCard(Card):
     def __init__(self, screen, eventHandler, timer):
-        super().__init__("res/minefield_card.png", screen, eventHandler, timer)
+        cards = {"0": "res/minefield_card.png",
+                 "1": "res/minefield_card.png",
+                 "2": "res/minefield_card.png",
+                 "3": "res/minefield_card.png",
+                 "4": "res/minefield_card.png",
+                 "5": "res/minefield_card.png",
+                 "6": "res/minefield_card.png", }
+        self.x = random.randint(0, 6)
 
-        self.field = [[False, False, True, False, False, True, False],
-                      [False, True, False, False, False, True, False],
-                      [False, True, False, True, False, False, False],
-                      [True, False, False, False, True, False, False],
-                      [False, False, True, True, False, False, False],
-                      [False, True, False, False, False, True, True],
-                      [False, True, False, True, False, False, False]]
+        super().__init__(cards[str(self.x)], screen, eventHandler, timer)
+        if self.x in range(7):
+            self.field = [[False, False, True, False, False, True, False],
+                          [False, True, False, False, False, True, False],
+                          [False, True, False, True, False, False, False],
+                          [True, False, False, False, True, False, False],
+                          [False, False, True, True, False, False, False],
+                          [False, True, False, False, False, True, True],
+                          [False, True, False, True, False, False, False]]
         self.player_pos = [6,0]
         self.font = pygame.font.SysFont("segoescript", 50)
         self.xtxt = self.font.render("x", True, "Red")
@@ -236,27 +277,28 @@ class MinefieldCard(Card):
             self.eventHandler.is_lockedp["w"] = True
             if self.player_pos[0] > 0:
                 self.player_pos[0] -= 1
-        if not self.eventHandler.is_pressed["w"]:
-            self.eventHandler.is_lockedp["w"] = False
-
-        if self.eventHandler.is_pressed["a"] and not self.eventHandler.is_lockedp["a"]:
+        elif self.eventHandler.is_pressed["a"] and not self.eventHandler.is_lockedp["a"]:
             self.eventHandler.is_lockedp["a"] = True
             if self.player_pos[1] > 0:
                 self.player_pos[1] -= 1
-        if not self.eventHandler.is_pressed["a"]:
-            self.eventHandler.is_lockedp["a"] = False
-
-        if self.eventHandler.is_pressed["s"] and not self.eventHandler.is_lockedp["s"]:
+        elif self.eventHandler.is_pressed["s"] and not self.eventHandler.is_lockedp["s"]:
             self.eventHandler.is_lockedp["s"] = True
             if self.player_pos[0] < 6:
                 self.player_pos[0] += 1
-        if not self.eventHandler.is_pressed["s"]:
-            self.eventHandler.is_lockedp["s"] = False
-
-        if self.eventHandler.is_pressed["d"] and not self.eventHandler.is_lockedp["d"]:
+        elif self.eventHandler.is_pressed["d"] and not self.eventHandler.is_lockedp["d"]:
             self.eventHandler.is_lockedp["d"] = True
             if self.player_pos[1] < 6:
                 self.player_pos[1] += 1
+
+        if not self.eventHandler.is_pressed["w"]:
+            self.eventHandler.is_lockedp["w"] = False
+
+        if not self.eventHandler.is_pressed["a"]:
+            self.eventHandler.is_lockedp["a"] = False
+
+        if not self.eventHandler.is_pressed["s"]:
+            self.eventHandler.is_lockedp["s"] = False
+
         if not self.eventHandler.is_pressed["d"]:
             self.eventHandler.is_lockedp["d"] = False
 
@@ -1074,8 +1116,20 @@ class GraphCard(Card):
 
 class PrimeCard(Card):
     def __init__(self, screen, eventHandler, timer):
-        super().__init__("res/prime_card.png", screen, eventHandler, timer)
+        cards = {"0": "res/prime_card.png",
+                 "1": "res/prime_card.png",
+                 "2": "res/prime_card.png",
+                 "3": "res/prime_card.png",
+                 "4": "res/prime_card.png",
+                 "5": "res/prime_card.png",
+                 "6": "res/prime_card.png", }
+        self.x = random.randint(0, 6)
+
+        super().__init__(cards[str(self.x)], screen, eventHandler, timer)
         self.buttons = [False, False, False, False, False, False]
+        if self.x in range(7):
+            self.correct = self.buttons[2:5]
+            self.wrong = self.buttons[:2] + [self.buttons[5]]
         self.hover_surface = pygame.Surface((174, 124))
         self.hover_surface.set_alpha(30)
         self.hover_surface.set_colorkey((255, 255, 255))
@@ -1105,7 +1159,10 @@ class PrimeCard(Card):
 
         if not self.eventHandler.is_clicked["left"]:
             self.eventHandler.is_lockedc["left"] = False
-        if all(self.buttons[2:5]) and not self.buttons[0] and not self.buttons[1] and not self.buttons[5]:
+        if self.x in range(7):
+            self.correct = self.buttons[2:5]
+            self.wrong = self.buttons[:2] + [self.buttons[5]]
+        if all(self.correct) and not any(self.wrong):
             self.done()
             return True
     def render(self, counter):
@@ -1508,7 +1565,7 @@ class PasswordCard2(Card):
             return True
         if len(self.password) == 10 and not self.faillock:
             self.faillock = True
-            return False
+
     def render(self, counter):
         super().render(counter)
         if not self.show:
@@ -1580,6 +1637,7 @@ class OrderCard(Card):
             self.started = False
             self.inputs = 0
             self.sequence = []
+            return False
         if self.sequence == self.answer:
             self.done()
             return True
@@ -1638,3 +1696,163 @@ class OrderCard(Card):
                     self.drawNumber(2)
         if not self.eventHandler.is_clicked["left"]:
             state.order_card_block = False
+
+class TrailCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        cards = {"0": "res/trail_card.png",
+                 "1": "res/trail_card.png",
+                 "2": "res/trail_card.png",
+                 "3": "res/trail_card.png",
+                 "4": "res/trail_card.png",
+                 "5": "res/trail_card.png",
+                 "6": "res/trail_card.png", }
+        self.x = random.randint(0, 6)
+
+        super().__init__(cards[str(self.x)], screen, eventHandler, timer)
+        if self.x in range(7):
+            self.level_dict =  {"0" : pygame.image.load("res/trail_card1.png"),
+                                "1" : pygame.image.load("res/trail_card2.png"),
+                                "2" : pygame.image.load("res/trail_card3.png"),}
+            self.buttons = ["j", "a", "m"]
+        self.level = 1
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+
+        for button in self.eventHandler.is_pressed:
+            if len(button) > 1 or not button.isalpha():
+                continue
+            if self.eventHandler.is_pressed[button] and not self.eventHandler.is_lockedp[button]:
+                self.eventHandler.is_lockedp[button] = True
+                if button not in self.buttons:
+                    return False
+                if button == self.buttons[self.level - 1]:
+                    self.level += 1
+                    self.surface = self.level_dict[str(self.level - 2)]
+            if not self.eventHandler.is_pressed[button]:
+                self.eventHandler.is_lockedp[button] = False
+
+        if self.level == 4:
+            self.done()
+            return True
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+
+
+class ColorwordCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        cards = {"0": "res/colorword_card.png",
+                 "1": "res/colorword_card.png",
+                 "2": "res/colorword_card.png",
+                 "3": "res/colorword_card.png",
+                 "4": "res/colorword_card.png",
+                 "5": "res/colorword_card.png",
+                 "6": "res/colorword_card.png", }
+        self.x = random.randint(0, 6)
+
+        super().__init__(cards[str(self.x)], screen, eventHandler, timer)
+        self.hover_surface = pygame.Surface((148, 109))
+        self.hover_surface.set_alpha(30)
+        self.hover_surface.set_colorkey((255, 255, 255))
+        self.buttons = [False, False, False, False, False]
+        if self.x in range(7):
+            self.sequence = [1,4,3,1,2]
+        self.level = 0
+        self.check = pygame.image.load("res/check.png")
+        self.check = pygame.transform.scale(self.check, (self.check.get_width()/6, self.check.get_height()/6))
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            mousePos = self.eventHandler.mousePos
+            if 644 <= mousePos[1] <= 753:
+                for i in range(5):
+                    if 362 + 180 * i <= mousePos[0] <= 511 + 180 * i:
+                        self.buttons[i] = True
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+        if any(self.buttons):
+            if self.buttons[self.sequence[self.level]]:
+                self.level += 1
+            else:
+                self.buttons = [False, False, False, False, False]
+                return False
+        if self.level == 5:
+            self.done()
+            return True
+
+        self.buttons = [False, False, False, False, False]
+    def render(self, counter):
+        super().render(counter)
+        for i in range(self.level):
+            self.screen.blit(self.check, (self.pos[0] + 215 + 162*i, self.pos[1] + 230))
+        if self.end:
+            return
+        mousePos = self.eventHandler.mousePos
+        if 644 <= mousePos[1] <= 753:
+            for i in range(5):
+                if 362 + 180*i <= mousePos[0] <= 511 + 180*i:
+                    self.screen.blit(self.hover_surface, (362 + 180*i, 644))
+
+class MousebuttonsCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/mousebuttons_card.png", screen, eventHandler, timer)
+        self.started = False
+        self.now = 0
+        self.last = 0
+        self.clicks_left = 11
+        self.cover = pygame.Surface((495, 37))
+        self.cover.fill((255, 236, 177))
+        self.font = pygame.font.SysFont("segoescript", 75)
+        self.leftfont = pygame.font.SysFont("segoescript", 26)
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            self.started = True
+            if not self.last:
+                self.clicks_left -= 1
+            else:
+                return False
+            self.last = self.now
+            self.now = random.randint(0,1)
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+
+        if self.eventHandler.is_clicked["right"] and not self.eventHandler.is_lockedc["right"]:
+            self.eventHandler.is_lockedc["right"] = True
+            if self.last:
+                self.clicks_left -= 1
+            else:
+                return False
+            self.last = self.now
+            self.now = random.randint(0,1)
+        if not self.eventHandler.is_clicked["right"]:
+            self.eventHandler.is_lockedc["right"] = False
+        if self.clicks_left == 0:
+            self.done()
+            return True
+
+    def render(self, counter):
+        super().render(counter)
+        if not self.now and self.started:
+            text = self.font.render("left", True, "Red")
+            self.screen.blit(text, (self.pos[0] + self.surface_size[0]/2 - text.get_width()/2, 642 - text.get_height()/2))
+        if self.now:
+            text = self.font.render("right ", True, "Red")
+            self.screen.blit(text, (self.pos[0] + self.surface_size[0] / 2 - text.get_width() / 2, 642 - text.get_height() / 2))
+        if self.started:
+            self.screen.blit(self.cover, (554, 731))
+        if self.end:
+            return
+        if self.started:
+            text = self.leftfont.render(str(self.clicks_left), True, "Red")
+            self.screen.blit(text, (1054 - text.get_width()/2, 531 - text.get_height()/2))
