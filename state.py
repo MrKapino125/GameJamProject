@@ -199,7 +199,7 @@ class GameState(State):
         else:
             time = str(int(time * 10) / 10)
         timetxt = pygame.font.SysFont("segoescript", 75).render(time, True, "Red")
-        cards_lefttxt =  pygame.font.SysFont("segoescript", 75).render(str(self.cards_left), True, "Red")
+        #cards_lefttxt =  pygame.font.SysFont("segoescript", 75).render(str(self.cards_left), True, "Red")
         self.screen.blit(self.interface, (250, 37.5/2))
         self.screen.blit(timetxt, (400, 75))
         if self.cards_left < 10:
