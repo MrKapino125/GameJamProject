@@ -1914,7 +1914,7 @@ class MousebuttonsCard(Card):
     def __init__(self, screen, eventHandler, timer):
         super().__init__("res/mousebuttons_card.png", screen, eventHandler, timer)
         self.started = False
-        self.now = 0
+        self.now = random.randint(0, 1)
         self.last = 0
         self.clicks_left = 11
         self.cover = pygame.Surface((495, 37))
@@ -1953,7 +1953,7 @@ class MousebuttonsCard(Card):
 
     def render(self, counter):
         super().render(counter)
-        if not self.now and self.started:
+        if not self.now:
             text = self.font.render("left", True, "Red")
             self.screen.blit(text, (self.pos[0] + self.surface_size[0]/2 - text.get_width()/2, 642 - text.get_height()/2))
         if self.now:
