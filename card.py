@@ -1966,3 +1966,144 @@ class MousebuttonsCard(Card):
         if self.started:
             text = self.leftfont.render(str(self.clicks_left), True, "Red")
             self.screen.blit(text, (1054 - text.get_width()/2, 531 - text.get_height()/2))
+
+class KeyboardpressCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/keyboardpress_card.png", screen, eventHandler, timer)
+        self.cover = pygame.Surface((65, 65))
+        self.cover.fill((255, 236, 177))
+        self.y = 425
+        self.coordinates = [467, 539, 592, 656, 730, 857, 927, 1001, 1079, 336, 429, 505, 577, 648, 775, 845, 915, 987, 1062, 1140, 1219, 302, 356, 422, 508, 586, 649, 719, 805, 883, 956, 1032, 1108, 1176, 1239]
+        self.buttons = [self.eventHandler.is_pressed["a"], self.eventHandler.is_pressed["b"],
+                        self.eventHandler.is_pressed["c"], self.eventHandler.is_pressed["e"],
+                        self.eventHandler.is_pressed["h"], self.eventHandler.is_pressed["i"],
+                        self.eventHandler.is_pressed["k"], self.eventHandler.is_pressed["l"],
+                        self.eventHandler.is_pressed["m"], self.eventHandler.is_pressed["n"],
+                        self.eventHandler.is_pressed["o"], self.eventHandler.is_pressed["s"],
+                        self.eventHandler.is_pressed["t"], self.eventHandler.is_pressed["u"],
+                        self.eventHandler.is_pressed["y"]]
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        buttons = [self.eventHandler.is_pressed["a"], self.eventHandler.is_pressed["b"],
+                   self.eventHandler.is_pressed["c"], self.eventHandler.is_pressed["e"],
+                   self.eventHandler.is_pressed["h"], self.eventHandler.is_pressed["i"],
+                   self.eventHandler.is_pressed["k"], self.eventHandler.is_pressed["l"],
+                   self.eventHandler.is_pressed["m"], self.eventHandler.is_pressed["n"],
+                   self.eventHandler.is_pressed["o"], self.eventHandler.is_pressed["s"],
+                   self.eventHandler.is_pressed["t"], self.eventHandler.is_pressed["u"],
+                   self.eventHandler.is_pressed["y"]]
+        self.buttons = buttons
+        if self.eventHandler.is_clicked["right"]:
+            if self.eventHandler.is_clicked["left"]:
+                self.done()
+                return True
+
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        if not self.buttons[0]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[27], self.y + 200))
+        if not self.buttons[1]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[5], self.y))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[14], self.y + 100))
+        if not self.buttons[2]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[0], self.y))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[3], self.y))
+        if not self.buttons[3]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[13], self.y + 100))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[29], self.y + 200))
+        if not self.buttons[4]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[8], self.y))
+        if not self.buttons[5]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[2], self.y))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[22], self.y + 200))
+        if not self.buttons[6]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[4], self.y))
+        if not self.buttons[7]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[1], self.y))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[25], self.y + 200))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[33], self.y + 200))
+        if not self.buttons[8]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[9], self.y + 100))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[23], self.y + 200))
+        if not self.buttons[9]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[19], self.y + 100))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[28], self.y + 200))
+        if not self.buttons[10]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[6], self.y))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[10], self.y + 100))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[18], self.y + 100))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[30], self.y + 200))
+        if not self.buttons[11]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[12], self.y + 100))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[20], self.y + 100))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[21], self.y + 200))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[32], self.y + 200))
+        if not self.buttons[12]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[7], self.y))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[16], self.y + 100))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[17], self.y + 100))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[26], self.y + 200))
+        if not self.buttons[13]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[11], self.y + 100))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[15], self.y + 100))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[24], self.y + 200))
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[31], self.y + 200))
+        if not self.buttons[14]:
+            self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[34], self.y + 200))
+        for i in self.eventHandler.is_pressed:
+            if self.eventHandler.is_pressed[i]:
+                self.eventHandler.is_lockedp[i] = False
+
+class CursorCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/cursor_card.png", screen, eventHandler, timer)
+        self.inputs = 0
+        self.hover_surface = pygame.Surface((174, 124))
+        self.hover_surface.set_alpha(30)
+        self.hover_surface.set_colorkey((255, 255, 255))
+        self.alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+        self.symbols = []
+        for _ in range(6):
+            x = random.randint(0, 25)
+            while x in self.symbols:
+                x = random.randint(0, 25)
+            self.symbols.append(x)
+        self.coordinates = [(403, 380), (702, 380), (1000, 380), (403, 628), (702, 628), (1000, 628)]
+        self.answer = random.randint(0, 5)
+        self.current = 0
+        self.starttime = 0
+        self.font = pygame.font.SysFont("Wingdings", 72)
+
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.timer.time - self.starttime > 0.5:
+            self.starttime = self.timer.time
+            current = random.randint(0, 5)
+            self.current = current
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            if self.current == self.answer:
+                self.done()
+                return True
+            else:
+                return False
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        for i in range(6):
+            text = self.font.render(self.alphabet[self.symbols[i]], True, "Red")
+            self.screen.blit(text, (self.coordinates[i][0] + 50, self.coordinates[i][1] + 25))
+        answer_text = self.font.render(self.alphabet[self.symbols[self.answer]], True, "Red")
+        self.screen.blit(answer_text, (1210, 543))
+        self.screen.blit(self.hover_surface, self.coordinates[self.current])

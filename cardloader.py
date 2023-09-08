@@ -4,7 +4,7 @@ class Cardloader:
     def loadcard(self, id, screen, eventhandler, timer):
         match id:
             case -1:
-                return 30
+                return 32
             case 0:
                 return card.ClickCard(screen, eventhandler, timer)
             case 1:
@@ -65,4 +65,7 @@ class Cardloader:
                 return card.ColorwordCard(screen, eventhandler, timer)
             case 23:
                 return card.MousebuttonsCard(screen, eventhandler, timer)
-
+            case 30:
+                return card.KeyboardpressCard(screen, eventhandler, timer)
+            case 31:
+                return card.CursorCard(screen, eventhandler, timer)
