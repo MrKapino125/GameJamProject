@@ -157,7 +157,7 @@ class GameState(State):
         self.started = False
 
         self.cards_left = self.cardLoader.loadcard(-1, self.screen, self.eventHandler, self.timer)
-        self.current_card = self.cardLoader.loadcard(32, self.screen, self.eventHandler, self.timer)
+        self.current_card = self.cardLoader.loadcard(30, self.screen, self.eventHandler, self.timer)
         self.next_card = self.cardLoader.loadcard(1, self.screen, self.eventHandler, self.timer)
         self.holding_card = None
         self.cardcounter = 1
@@ -199,7 +199,7 @@ class GameState(State):
         else:
             time = str(int(time * 10) / 10)
         timetxt = pygame.font.SysFont("segoescript", 75).render(time, True, "Red")
-        cards_lefttxt =  pygame.font.SysFont("segoescript", 75).render(str(self.cards_left), True, "Red")
+        cards_lefttxt = pygame.font.SysFont("segoescript", 75).render(str(self.cards_left), True, "Red")
         self.screen.blit(self.interface, (250, 37.5/2))
         self.screen.blit(timetxt, (400, 75))
         if self.cards_left < 10:

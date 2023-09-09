@@ -2122,9 +2122,6 @@ class RacetrackCard(Card):
         super().tick()
         self.player[0] += self.move_x
         self.player[1] += self.move_y
-        mousePos = self.eventHandler.mousePos
-        if self.eventHandler.is_clicked["left"]:
-            print(mousePos)
         if self.end:
             return
         if self.eventHandler.is_pressed["w"]:
@@ -2162,3 +2159,72 @@ class RacetrackCard(Card):
         if self.end:
             return
         pygame.draw.circle(self.screen, "Green", self.player, 8)
+
+class CardnumberCard(Card):
+    #self.screen.blit(cards_lefttxt, (1100, 75))
+    def __init__(self, screen, eventHandler, timer):
+
+        super().__init__("res/cardnumber_card.png", screen, eventHandler, timer)
+        self.answer = 2
+        self.hover_surface = pygame.Surface((174, 124))
+        self.hover_surface.set_alpha(30)
+        self.hover_surface.set_colorkey((255, 255, 255))
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+
+            mousePos = self.eventHandler.mousePos
+            if 628 <= mousePos[1] <= 752:
+                if 403 <= mousePos[0] <= 575:
+                    if self.answer == 0:
+                        self.done()
+                        return True
+                    else:
+                        return False
+                if 702 <= mousePos[0] <= 876:
+                    if self.answer == 1:
+                        self.done()
+                        return True
+                    else:
+                        return False
+                if 1000 <= mousePos[0] <= 1174:
+                    if self.answer == 2:
+                        self.done()
+                        return True
+                    else:
+                        return False
+            if self.pos[0] + 10 <= mousePos[0] <= self.pos[0] + 84 and self.pos[1] + 465 <= mousePos[1] <= self.pos[1] + 525:
+                return False
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+
+    def render(self, counter):
+        super().render(counter)
+        two_surface = pygame.Surface((74, 60))
+        two_surface.fill((236, 192, 94))
+        self.screen.blit(two_surface, (self.pos[0] - 250 + 260, 757))
+        if self.end:
+            return
+        mousePos = self.eventHandler.mousePos
+        if 628 <= mousePos[1] <= 752:
+            if 403 <= mousePos[0] <= 575:
+                self.screen.blit(self.hover_surface, (403, 628))
+            if 702 <= mousePos[0] <= 876:
+                self.screen.blit(self.hover_surface, (702, 628))
+            if 1000 <= mousePos[0] <= 1174:
+                self.screen.blit(self.hover_surface, (1000, 628))
+        if self.pos[0] + 10 <= mousePos[0] <= self.pos[0] + 84 and self.pos[1] + 465 <= mousePos[1] <= self.pos[1] + 525:
+            number = self.numberfont.render("29", True, (255, 255, 219))
+            self.screen.blit(number, (self.pos[0] + 10, self.pos[1] + 465))
+        else:
+            self.drawNumber(29)
+        card_surface = pygame.Surface((200, 80))
+        card_surface.fill((255, 253, 219))
+        self.screen.blit(card_surface, (1019, 90))
+        cards_lefttxt = pygame.font.SysFont("segoescript", 75).render("69", True, "Red")
+        self.screen.blit(cards_lefttxt, (1100, 75))
