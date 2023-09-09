@@ -2281,3 +2281,4 @@ class OsuCard(Card):
                     buttontxt = pygame.font.SysFont("segoescript", self.points[i][2] + 10, True).render(self.values[i], True, (255, 236, 177))
                     self.screen.blit(buttontxt, (self.points[i][0] - 1 * (self.points[i][2] / 2), self.points[i][1] - 5 - 8 * (self.points[i][2] / 9)))
 
+
