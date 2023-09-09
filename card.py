@@ -2163,7 +2163,6 @@ class RacetrackCard(Card):
 class CardnumberCard(Card):
     #self.screen.blit(cards_lefttxt, (1100, 75))
     def __init__(self, screen, eventHandler, timer):
-
         super().__init__("res/cardnumber_card.png", screen, eventHandler, timer)
         self.answer = 2
         self.hover_surface = pygame.Surface((174, 124))
@@ -2228,3 +2227,57 @@ class CardnumberCard(Card):
         self.screen.blit(card_surface, (1019, 90))
         cards_lefttxt = pygame.font.SysFont("segoescript", 75).render("69", True, "Red")
         self.screen.blit(cards_lefttxt, (1100, 75))
+
+class OsuCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/osu_card.png", screen, eventHandler, timer)
+        self.points = [(357, 450, 40), (1234, 699, 34), (833, 679, 39), (645, 480, 24), (1113, 760, 21), (745, 550, 35), (853, 529, 58), (1084, 667, 28), (1279, 497, 20), (871, 615, 21), (712, 490, 28), (626, 629, 18), (320, 695, 22), (1285, 651, 23), (915, 663, 27), (914, 731, 30), (384, 370, 23), (1019, 645, 32), (521, 742, 38), (1030, 743, 51), (480, 665, 24), (1033, 572, 20), (404, 730, 52), (1085, 495, 46), (442, 493, 25), (749, 674, 20), (1128, 705, 23), (784, 617, 30), (947, 483, 34), (1093, 591, 34), (706, 617, 34), (382, 595, 70), (854, 755, 23), (1217, 434, 57), (778, 743, 33), (577, 606, 23), (1218, 527, 28), (967, 691, 22), (509, 592, 38), (957, 583, 44), (652, 718, 68), (1174, 743, 28), (1159, 567, 29), (639, 559, 45), (778, 474, 22), (1237, 596, 30), (1167, 644, 42), (550, 665, 31), (1004, 515, 23), (1164, 510, 22), (557, 508, 43), (894, 356, 12), (0, 0, 0)]
+        self.keys = ["w", "a", "s", "d"]
+        self.values = []
+        for _ in range(52):
+            self.values.append(self.keys[random.randint(0, 3)])
+        self.length = 52
+        self.update = 53
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if len(self.points) == 1:
+            self.done()
+            return True
+        mousePos = self.eventHandler.mousePos
+        if len(self.points) > 15:
+            for pos in range(15):
+                if math.sqrt((mousePos[0] - self.points[pos][0]) ** 2 + (mousePos[1] - self.points[pos][1]) ** 2) < self.points[pos][2]:
+                    if self.eventHandler.is_pressed[self.values[pos]]:
+                        self.points.pop(pos)
+                        self.values.pop(pos)
+                        self.update -= 1
+                        self.length -= 1
+        else:
+            for pos in range(len(self.points) - 1):
+                if math.sqrt((mousePos[0] - self.points[pos][0]) ** 2 + (mousePos[1] - self.points[pos][1]) ** 2) < self.points[pos][2]:
+                    if self.eventHandler.is_pressed[self.values[pos]]:
+                        self.points.pop(pos)
+                        self.values.pop(pos)
+                        self.update -= 1
+                        self.length -= 1
+
+
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        if self.update != self.length:
+            if len(self.points) > 15:
+                for i in range(15):
+                    pygame.draw.circle(self.screen, "Red", (self.pos[0] - 250 + self.points[i][0], self.points[i][1]), self.points[i][2])
+                    buttontxt = pygame.font.SysFont("segoescript", self.points[i][2] + 10, True).render(self.values[i], True, (255, 236, 177))
+                    self.screen.blit(buttontxt, (self.points[i][0] - 1 * (self.points[i][2] / 2), self.points[i][1] - 5 - 8 * (self.points[i][2] / 9)))
+            else:
+                for i in range(len(self.points) - 1):
+                    pygame.draw.circle(self.screen, "Red", (self.pos[0] - 250 + self.points[i][0], self.points[i][1]), self.points[i][2])
+                    buttontxt = pygame.font.SysFont("segoescript", self.points[i][2] + 10, True).render(self.values[i], True, (255, 236, 177))
+                    self.screen.blit(buttontxt, (self.points[i][0] - 1 * (self.points[i][2] / 2), self.points[i][1] - 5 - 8 * (self.points[i][2] / 9)))
+
