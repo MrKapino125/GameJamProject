@@ -2107,3 +2107,58 @@ class CursorCard(Card):
         answer_text = self.font.render(self.alphabet[self.symbols[self.answer]], True, "Red")
         self.screen.blit(answer_text, (1210, 543))
         self.screen.blit(self.hover_surface, self.coordinates[self.current])
+
+class RacetrackCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/racetrack_card.png", screen, eventHandler, timer)
+        self.middle = (self.pos[0] + self.surface_size[0]/2, self.pos[1] + self.surface_size[1]/2)
+        self.player = [self.middle[0] - 50, self.middle[1] - 161]
+        self.move_x = 8
+        self.move_y = 0
+        self.checkpoints = [False, False, False]
+
+
+    def tick(self):
+        super().tick()
+        self.player[0] += self.move_x
+        self.player[1] += self.move_y
+        mousePos = self.eventHandler.mousePos
+        if self.eventHandler.is_clicked["left"]:
+            print(mousePos)
+        if self.end:
+            return
+        if self.eventHandler.is_pressed["w"]:
+            self.move_x = 0
+            self.move_y = -8
+        if self.eventHandler.is_pressed["a"]:
+            self.move_x = -8
+            self.move_y = 0
+        if self.eventHandler.is_pressed["s"]:
+            self.move_x = 0
+            self.move_y = 8
+        if self.eventHandler.is_pressed["d"]:
+            self.move_x = 8
+            self.move_y = 0
+        if (380 <= self.player[0] <= 1214 and 378 <= self.player[1] <= 431) or (1143 <= self.player[0] <= 1214 and 378 <= self.player[1] <= 587) or (1046 <= self.player[0] <= 1214 and 525 <= self.player[1] <= 587) or (1046 <= self.player[0] <= 1111 and 525 <= self.player[1] <= 754) or (754 <= self.player[0] <= 1111 and 698 <= self.player[1] <= 754) or (754 <= self.player[0] <= 816 and 512 <= self.player[1] <= 754) or (640 <= self.player[0] <= 816 and 512 <= self.player[1] <= 570) or (640 <= self.player[0] <= 695 and 512 <= self.player[1] <= 700) or (306 <= self.player[0] <= 695 and 650 <= self.player[1] <= 700) or (305 <= self.player[0] <= 355 and 554 <= self.player[1] <= 701) or (305 <= self.player[0] <= 435 and 554 <= self.player[1] <= 604) or (380 <= self.player[0] <= 435 and 378 <= self.player[1] <= 604):
+            pass
+        else:
+            self.player = [self.middle[0] - 50, self.middle[1] - 161]
+            self.move_x = 8
+            self.move_y = 0
+            self.checkpoints = [False, False, False]
+            return False
+        if 1046 <= self.player[0] <= 1111 and 632 <= self.player[1] <= 660:
+            self.checkpoints[0] = True
+        if 703 <= self.player[0] <= 740 and 513 <= self.player[1] <= 571 and self.checkpoints[0]:
+            self.checkpoints[1] = True
+        if 305 <= self.player[0] <= 355 and 606 <= self.player[1] <= 636 and self.checkpoints[0] and self.checkpoints[1]:
+            self.checkpoints[2] = True
+        if 735 <= self.player[0] <= 764 and 380 <= self.player[1] <= 428 and self.checkpoints[0] and self.checkpoints[1] and self.checkpoints[2]:
+            self.done()
+            return True
+
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        pygame.draw.circle(self.screen, "Green", self.player, 8)
