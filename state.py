@@ -227,3 +227,4 @@ class EndState(State):
         self.screen.blit(failstxt, (3 * self.screen.get_width() / 5 - failstxt.get_width() / 2 + 3,
                                    self.screen.get_height() / 2 - failstxt.get_height() / 2 + 170))
 
+
