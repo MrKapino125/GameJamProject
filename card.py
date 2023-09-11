@@ -1974,6 +1974,7 @@ class KeyboardpressCard(Card):
         self.cover.fill((255, 236, 177))
         self.y = 425
         self.coordinates = [467, 539, 592, 656, 730, 857, 927, 1001, 1079, 336, 429, 505, 577, 648, 775, 845, 915, 987, 1062, 1140, 1219, 302, 356, 422, 508, 586, 649, 719, 805, 883, 956, 1032, 1108, 1176, 1239]
+        #                    C    L    I    C    K    B    O    T     H     M    O    U    S    E    B    U    T    T    O     N     S     S    I    M    U    L    T    A    N    E    O    U     S     L     Y
         self.buttons = [self.eventHandler.is_pressed["a"], self.eventHandler.is_pressed["b"],
                         self.eventHandler.is_pressed["c"], self.eventHandler.is_pressed["e"],
                         self.eventHandler.is_pressed["h"], self.eventHandler.is_pressed["i"],
@@ -1998,8 +1999,13 @@ class KeyboardpressCard(Card):
         self.buttons = buttons
         if self.eventHandler.is_clicked["right"]:
             if self.eventHandler.is_clicked["left"]:
+                self.eventHandler.is_lockedc["left"] = True
+                self.eventHandler.is_lockedc["right"] = True
                 self.done()
                 return True
+        for i in self.eventHandler.is_pressed:
+            if self.eventHandler.is_pressed[i]:
+                self.eventHandler.is_lockedp[i] = False
 
     def render(self, counter):
         super().render(counter)
@@ -2055,9 +2061,6 @@ class KeyboardpressCard(Card):
             self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[31], self.y + 200))
         if not self.buttons[14]:
             self.screen.blit(self.cover, (self.pos[0] - 250 + self.coordinates[34], self.y + 200))
-        for i in self.eventHandler.is_pressed:
-            if self.eventHandler.is_pressed[i]:
-                self.eventHandler.is_lockedp[i] = False
 
 class CursorCard(Card):
     def __init__(self, screen, eventHandler, timer):
@@ -2150,7 +2153,7 @@ class RacetrackCard(Card):
             self.checkpoints[1] = True
         if 305 <= self.player[0] <= 355 and 606 <= self.player[1] <= 636 and self.checkpoints[0] and self.checkpoints[1]:
             self.checkpoints[2] = True
-        if 735 <= self.player[0] <= 764 and 380 <= self.player[1] <= 428 and self.checkpoints[0] and self.checkpoints[1] and self.checkpoints[2]:
+        if 735 <= self.player[0] <= 764 and 380 <= self.player[1] <= 428 and all(self.checkpoints):
             self.done()
             return True
 
@@ -2161,7 +2164,6 @@ class RacetrackCard(Card):
         pygame.draw.circle(self.screen, "Green", self.player, 8)
 
 class CardnumberCard(Card):
-    #self.screen.blit(cards_lefttxt, (1100, 75))
     def __init__(self, screen, eventHandler, timer):
         super().__init__("res/cardnumber_card.png", screen, eventHandler, timer)
         self.answer = 2
@@ -2204,11 +2206,11 @@ class CardnumberCard(Card):
 
     def render(self, counter):
         super().render(counter)
-        two_surface = pygame.Surface((74, 60))
-        two_surface.fill((236, 192, 94))
-        self.screen.blit(two_surface, (self.pos[0] - 250 + 260, 757))
         if self.end:
             return
+        corner_surface = pygame.Surface((74, 60))
+        corner_surface.fill((236, 192, 94))
+        self.screen.blit(corner_surface, (self.pos[0] - 250 + 260, 757))
         mousePos = self.eventHandler.mousePos
         if 628 <= mousePos[1] <= 752:
             if 403 <= mousePos[0] <= 575:
@@ -2225,60 +2227,176 @@ class CardnumberCard(Card):
         card_surface = pygame.Surface((200, 80))
         card_surface.fill((255, 253, 219))
         self.screen.blit(card_surface, (1019, 90))
-        cards_lefttxt = pygame.font.SysFont("segoescript", 75).render("69", True, "Red")
-        self.screen.blit(cards_lefttxt, (1100, 75))
+        cards_lefttxt = pygame.font.SysFont("segoescript", 75).render("7", True, "Red")
+        self.screen.blit(cards_lefttxt, (1150, 75))
 
 class OsuCard(Card):
     def __init__(self, screen, eventHandler, timer):
         super().__init__("res/osu_card.png", screen, eventHandler, timer)
-        self.points = [(357, 450, 40), (1234, 699, 34), (833, 679, 39), (645, 480, 24), (1113, 760, 21), (745, 550, 35), (853, 529, 58), (1084, 667, 28), (1279, 497, 20), (871, 615, 21), (712, 490, 28), (626, 629, 18), (320, 695, 22), (1285, 651, 23), (915, 663, 27), (914, 731, 30), (384, 370, 23), (1019, 645, 32), (521, 742, 38), (1030, 743, 51), (480, 665, 24), (1033, 572, 20), (404, 730, 52), (1085, 495, 46), (442, 493, 25), (749, 674, 20), (1128, 705, 23), (784, 617, 30), (947, 483, 34), (1093, 591, 34), (706, 617, 34), (382, 595, 70), (854, 755, 23), (1217, 434, 57), (778, 743, 33), (577, 606, 23), (1218, 527, 28), (967, 691, 22), (509, 592, 38), (957, 583, 44), (652, 718, 68), (1174, 743, 28), (1159, 567, 29), (639, 559, 45), (778, 474, 22), (1237, 596, 30), (1167, 644, 42), (550, 665, 31), (1004, 515, 23), (1164, 510, 22), (557, 508, 43), (894, 356, 12), (0, 0, 0)]
+        self.points = [(357, 450, 40), (1234, 699, 34), (833, 679, 39), (645, 480, 24), (1113, 760, 21), (745, 550, 35), (853, 529, 58), (1084, 667, 28), (1279, 497, 20), (871, 615, 21), (712, 490, 28), (626, 629, 18), (320, 695, 22), (1285, 651, 23), (915, 663, 27), (914, 731, 30), (384, 370, 23), (1019, 645, 32), (521, 742, 38), (1030, 743, 51), (480, 665, 24), (1033, 572, 20), (404, 730, 52), (1085, 495, 46), (442, 493, 25), (749, 674, 20), (1128, 705, 23), (784, 617, 30), (947, 483, 34), (1093, 591, 34), (706, 617, 34), (382, 595, 70), (854, 755, 23), (1217, 434, 57), (778, 743, 33), (577, 606, 23), (1218, 527, 28), (967, 691, 22), (509, 592, 38), (957, 583, 44), (652, 718, 68), (1174, 743, 28), (1159, 567, 29), (639, 559, 45), (778, 474, 22), (1237, 596, 30), (1167, 644, 42), (550, 665, 31), (1004, 515, 23), (1164, 510, 22), (557, 508, 43), (894, 356, 12)]
         self.keys = ["w", "a", "s", "d"]
         self.values = []
         for _ in range(52):
             self.values.append(self.keys[random.randint(0, 3)])
-        self.length = 52
-        self.update = 53
+        self.length = len(self.points)
 
     def tick(self):
         super().tick()
         if self.end:
             return
-        if len(self.points) == 1:
+        if len(self.points) == 0:
             self.done()
             return True
         mousePos = self.eventHandler.mousePos
-        if len(self.points) > 15:
-            for pos in range(15):
-                if math.sqrt((mousePos[0] - self.points[pos][0]) ** 2 + (mousePos[1] - self.points[pos][1]) ** 2) < self.points[pos][2]:
-                    if self.eventHandler.is_pressed[self.values[pos]]:
-                        self.points.pop(pos)
-                        self.values.pop(pos)
-                        self.update -= 1
-                        self.length -= 1
-        else:
-            for pos in range(len(self.points) - 1):
-                if math.sqrt((mousePos[0] - self.points[pos][0]) ** 2 + (mousePos[1] - self.points[pos][1]) ** 2) < self.points[pos][2]:
-                    if self.eventHandler.is_pressed[self.values[pos]]:
-                        self.points.pop(pos)
-                        self.values.pop(pos)
-                        self.update -= 1
-                        self.length -= 1
+        for pos in range(min(15, len(self.points))):
+            if math.sqrt((mousePos[0] - self.points[pos][0]) ** 2 + (mousePos[1] - self.points[pos][1]) ** 2) < self.points[pos][2]:
+                if self.eventHandler.is_pressed[self.values[pos]]:
+                    self.points.pop(pos)
+                    self.values.pop(pos)
+                    self.length -= 1
+                    break
 
 
     def render(self, counter):
         super().render(counter)
         if self.end:
             return
-        if self.update != self.length:
-            if len(self.points) > 15:
-                for i in range(15):
-                    pygame.draw.circle(self.screen, "Red", (self.pos[0] - 250 + self.points[i][0], self.points[i][1]), self.points[i][2])
-                    buttontxt = pygame.font.SysFont("segoescript", self.points[i][2] + 10, True).render(self.values[i], True, (255, 236, 177))
-                    self.screen.blit(buttontxt, (self.points[i][0] - 1 * (self.points[i][2] / 2), self.points[i][1] - 5 - 8 * (self.points[i][2] / 9)))
+        for i in range(min(15, len(self.points))):
+            pygame.draw.circle(self.screen, "Red", (self.pos[0] - 250 + self.points[i][0], self.points[i][1]), self.points[i][2])
+            buttontxt = pygame.font.SysFont("segoescript", self.points[i][2] + 10, True).render(self.values[i], True, (255, 236, 177))
+            self.screen.blit(buttontxt, (self.points[i][0] - 1 * (self.points[i][2] / 2), self.points[i][1] - 5 - 8 * (self.points[i][2] / 9)))
+
+
+class WordleCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/wordle_card0.png", screen, eventHandler, timer)
+        self.words = ["", "", ""]
+        self.color = ["Black", "Black", "Black"]
+        self.check = [False, False, False]
+        self.current = 0
+        self.font = pygame.font.SysFont("segoescript", 52)
+        self.alpha_font = pygame.font.SysFont("segoescript", 40)
+        self.number_of = dict()
+        self.wordlist = []  # list of tuples: (word, bitmap, neighbours)
+        word_list = open("txt/valid-wordle-words.txt")
+        for word in word_list:
+            self.wordlist.append(word[:5])
+        self.coords = [519, 631]
+        self.keysurface = pygame.Surface((50, 50))
+        self.alpha_data = {
+            "a": [0, 1, (225, 225, 225)],
+            "b": [4, 2, (225, 225, 225)],
+            "c": [2, 2, (225, 225, 225)],
+            "d": [2, 1, (225, 225, 225)],
+            "e": [2, 0, (225, 225, 225)],
+            "f": [3, 1, (225, 225, 225)],
+            "g": [4, 1, (225, 225, 225)],
+            "h": [5, 1, (225, 225, 225)],
+            "i": [7, 0, (225, 225, 225)],
+            "j": [6, 1, (225, 225, 225)],
+            "k": [7, 1, (225, 225, 225)],
+            "l": [8, 1, (225, 225, 225)],
+            "m": [6, 2, (225, 225, 225)],
+            "n": [5, 2, (225, 225, 225)],
+            "o": [8, 0, (225, 225, 225)],
+            "p": [9, 0, (225, 225, 225)],
+            "q": [0, 0, (225, 225, 225)],
+            "r": [3, 0, (225, 225, 225)],
+            "s": [1, 1, (225, 225, 225)],
+            "t": [4, 0, (225, 225, 225)],
+            "u": [6, 0, (225, 225, 225)],
+            "v": [3, 2, (225, 225, 225)],
+            "w": [1, 0, (225, 225, 225)],
+            "x": [1, 2, (225, 225, 225)],
+            "y": [5, 0, (225, 225, 225)],
+            "z": [0, 2, (225, 225, 225)]
+        }
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            mousePos = self.eventHandler.mousePos
+            print(mousePos)
+            if 330 <= mousePos[0] <= 592 and 522 <= mousePos[1] <= 610:
+                self.current = 0
+            if 665 <= mousePos[0] <= 927 and 522 <= mousePos[1] <= 610:
+                self.current = 1
+            if 1000 <= mousePos[0] <= 1262 and 522 <= mousePos[1] <= 610:
+                self.current = 2
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+
+        for button in self.alpha_data:
+            if len(button) > 1:
+                continue
+            if self.eventHandler.is_pressed[button] and not self.eventHandler.is_lockedp[button]:
+                self.eventHandler.is_lockedp[button] = True
+                if len(self.words[self.current]) < 5:
+                    self.words[self.current] += button
+                    if button in self.number_of.keys():
+                        self.number_of[button] += 1
+                        self.alpha_data[button][2] = (165, 165, 165)
+                    else:
+                        self.number_of[button] = 1
+                        self.alpha_data[button][2] = (165, 165, 165)
+            if not self.eventHandler.is_pressed[button]:
+                self.eventHandler.is_lockedp[button] = False
+        if self.eventHandler.is_pressed["back"] and not self.eventHandler.is_lockedp["back"]:
+            self.eventHandler.is_lockedp["back"] = True
+            if len(self.words[self.current]) > 0:
+                self.alpha_data[self.words[self.current][len(self.words[self.current]) - 1]][2] = (225, 225, 225)
+                self.number_of[self.words[self.current][len(self.words[self.current]) - 1]] -= 1
+                self.words[self.current] = self.words[self.current][:len(self.words[self.current]) - 1]
+        if not self.eventHandler.is_pressed["back"]:
+            self.eventHandler.is_lockedp["back"] = False
+
+        for i in range(3):
+            if len(self.words[i]) == 5:
+                if self.words[i] not in self.wordlist:
+                    self.color[i] = "Red"
+                else:
+                    for j in range(5):
+                        if self.number_of[self.words[i][j]] > 1:
+                            self.color[i] = "Red"
+                            break
+                    else:
+                        self.check[i] = True
             else:
-                for i in range(len(self.points) - 1):
-                    pygame.draw.circle(self.screen, "Red", (self.pos[0] - 250 + self.points[i][0], self.points[i][1]), self.points[i][2])
-                    buttontxt = pygame.font.SysFont("segoescript", self.points[i][2] + 10, True).render(self.values[i], True, (255, 236, 177))
-                    self.screen.blit(buttontxt, (self.points[i][0] - 1 * (self.points[i][2] / 2), self.points[i][1] - 5 - 8 * (self.points[i][2] / 9)))
+                self.color[i] = "Black"
 
+        if all(self.check):
+            self.color = ["Green", "Green", "Green"]
+            self.done()
+            return True
 
+    def render(self, counter):
+        super().render(counter)
+        if self.current == 0:
+            card = pygame.image.load("res/wordle_card0.png")
+            self.screen.blit(card, self.pos)
+            self.drawNumber(counter)
+        elif self.current == 1:
+            card = pygame.image.load("res/wordle_card1.png")
+            self.screen.blit(card, self.pos)
+            self.drawNumber(counter)
+        else:
+            card = pygame.image.load("res/wordle_card2.png")
+            self.screen.blit(card, self.pos)
+            self.drawNumber(counter)
+
+        word0 = self.font.render(self.words[0].upper(), True, self.color[0])
+        word1 = self.font.render(self.words[1].upper(), True, self.color[1])
+        word2 = self.font.render(self.words[2].upper(), True, self.color[2])
+        self.screen.blit(word0, (self.pos[0] + 19 * self.surface_size[0] / 100 - word0.get_width() / 2 - 5, self.pos[1] + 240))
+        self.screen.blit(word1, (self.pos[0] + self.surface_size[0] / 2 - word1.get_width() / 2 - 5, self.pos[1] + 240))
+        self.screen.blit(word2, (self.pos[0] + 81 * self.surface_size[0] / 100 - word2.get_width() / 2 - 5, self.pos[1] + 240))
+
+        for key in self.alpha_data.keys():
+            self.keysurface.fill(self.alpha_data[key][2])
+            letter = self.alpha_font.render(key.upper(), True, "Black")
+            self.screen.blit(self.keysurface, (self.pos[0] - 250 + 519 + self.alpha_data[key][0] * 56 + (self.alpha_data[key][1] % 2) * 28 + ((self.alpha_data[key][1] * 6 % 11) % 2) * 84, 629 + self.alpha_data[key][1] * 55))
+            self.screen.blit(letter, (self.pos[0] - 250 + 525 + self.alpha_data[key][0] * 56 + (self.alpha_data[key][1] % 2) * 28 + ((self.alpha_data[key][1] * 6 % 11) % 2) * 84, 624 + self.alpha_data[key][1] * 55))
+        if self.end:
+            return
