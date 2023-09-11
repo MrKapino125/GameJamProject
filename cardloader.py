@@ -77,3 +77,5 @@ class Cardloader:
                 return card.OsuCard(screen, eventhandler, timer)
             case 35:
                 return card.WordleCard(screen, eventhandler, timer)
+            case 36:
+                return card.BallCard(screen, eventhandler, timer)

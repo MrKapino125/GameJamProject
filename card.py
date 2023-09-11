@@ -2400,3 +2400,74 @@ class WordleCard(Card):
             self.screen.blit(letter, (self.pos[0] - 250 + 525 + self.alpha_data[key][0] * 56 + (self.alpha_data[key][1] % 2) * 28 + ((self.alpha_data[key][1] * 6 % 11) % 2) * 84, 624 + self.alpha_data[key][1] * 55))
         if self.end:
             return
+
+class BallCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/ball_card.png", screen, eventHandler, timer)
+        self.middle = (self.pos[0] + self.surface_size[0]/2, self.pos[1] + self.surface_size[1]/2)
+        self.ball = [self.middle[0] - 50, self.middle[1] - 131]
+        self.move_x = 6
+        self.move_y = 0
+        self.cups = [False, False, False]
+        self.ball_state = 0
+        self.starttime = 0
+        self.check = pygame.image.load("res/check.png")
+        self.check = pygame.transform.scale(self.check, (self.check.get_width() / 12, self.check.get_height() / 12))
+
+    def tick(self):
+        super().tick()
+        self.ball[0] += self.move_x
+        self.ball[1] += self.move_y
+        if self.end:
+            return
+        if self.ball[0] > 1120:
+            self.move_x = -6
+        if self.ball[0] < 480:
+            self.move_x = 6
+        mousePos = self.eventHandler.mousePos
+        if self.eventHandler.is_clicked["left"] and self.ball_state == 0:
+            self.move_x = 0
+            self.ball_state = 1
+            self.starttime = self.timer.time
+        if self.ball_state == 1:
+            self.move_y = (self.timer.time - self.starttime) * 25
+        if self.ball[1] > 673:
+            if 540 <= self.ball[0] <= 555 and not self.cups[0]:
+                self.cups[0] = True
+                self.ball_state = 0
+                self.move_x = (((random.randint(1, 2)) * 2) - 3) * 6
+                self.move_y = 0
+                self.ball = [self.middle[0] - 50, self.middle[1] - 131]
+            elif 791 <= self.ball[0] <= 806 and not self.cups[1]:
+                self.cups[1] = True
+                self.ball_state = 0
+                self.move_x = (((random.randint(1, 2)) * 2) - 3) * 6
+                self.move_y = 0
+                self.ball = [self.middle[0] - 50, self.middle[1] - 131]
+            elif 1042 <= self.ball[0] <= 1058 and not self.cups[2]:
+                self.cups[2] = True
+                self.ball_state = 0
+                self.move_x = (((random.randint(1, 2)) * 2) - 3) * 6
+                self.move_y = 0
+                self.ball = [self.middle[0] - 50, self.middle[1] - 131]
+            else:
+                self.ball_state = 0
+                self.move_x = (((random.randint(1, 2)) * 2) - 3) * 6
+                self.move_y = 0
+                self.ball = [self.middle[0] - 50, self.middle[1] - 131]
+                return False
+        if all(self.cups):
+            self.done()
+            return True
+
+    def render(self, counter):
+        super().render(counter)
+        if self.cups[0]:
+            self.screen.blit(self.check, (self.pos[0] - 250 + 545, 731))
+        if self.cups[1]:
+            self.screen.blit(self.check, (self.pos[0] - 250 + 798, 731))
+        if self.cups[2]:
+            self.screen.blit(self.check, (self.pos[0] - 250 + 1050, 731))
+        if self.end:
+            return
+        pygame.draw.circle(self.screen, "Green", self.ball, 29)
