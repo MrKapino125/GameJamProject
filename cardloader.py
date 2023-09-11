@@ -55,7 +55,7 @@ class Cardloader:
                 return card.TargetCard(screen, eventhandler, timer)
             case 6:
                 return card.PasswordCard1(screen, eventhandler, timer)
-            case 34:
+            case 38:
                 return card.PasswordCard2(screen, eventhandler, timer)
             case 21:
                 return card.OrderCard(screen, eventhandler, timer)
@@ -75,11 +75,11 @@ class Cardloader:
                 return card.CardnumberCard(screen, eventhandler, timer)
             case 30:
                 return card.OsuCard(screen, eventhandler, timer)
-            case 35:
+            case 37:
                 return card.WordleCard(screen, eventhandler, timer)
             case 36:
                 return card.BallCard(screen, eventhandler, timer)
-            case 37:
+            case 34:
                 return card.AlphabettypeCard(screen, eventhandler, timer)
-            case 38:
+            case 35:
                 return card.RandomCard(screen, eventhandler, timer)

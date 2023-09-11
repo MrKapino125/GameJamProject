@@ -2541,7 +2541,7 @@ class AlphabettypeCard(Card):
 class RandomCard(Card):
     def __init__(self, screen, eventHandler, timer):
         super().__init__("res/random_card.png", screen, eventHandler, timer)
-        self.texts = [(538, 410), (735, 410), (832, 410)]
+        self.texts = [(538, 410, 172), (735, 410, 73), (832, 410, 190)]
         self.buttons = [(530, 650), (730, 650), (930, 650)]
         self.checks = [False, False, False]
         self.txtfont = pygame.font.SysFont("segoescript", 60)
@@ -2594,7 +2594,10 @@ class RandomCard(Card):
             for i in range(3):
                 x = random.randint(349, 1051)
                 y = random.randint(340, 731)
-                self.texts[i] = (x, y)
+                while (-100 <= self.buttons[0][0] - x <= self.texts[i][2] and -75 <= self.buttons[0][1] - y <= 50) or (-100 <= self.buttons[1][0] - x <= self.texts[i][2] and -75 <= self.buttons[1][1] - y <= 50) or (-100 <= self.buttons[2][0] - x <= self.texts[i][2] and -75 <= self.buttons[2][1] - y <= 50) or (-172 <= self.texts[0][0] - x <= self.texts[i][2] and -50 <= self.texts[0][1] - y <= 50) or (-73 <= self.texts[1][0] - x <= self.texts[i][2] and -50 <= self.texts[1][1] - y <= 50) or (-190 <= self.texts[2][0] - x <= self.texts[i][2] and -50 <= self.texts[2][1] - y <= 50):
+                    x = random.randint(349, 1241 - self.texts[i][2])
+                    y = random.randint(340, 731)
+                self.texts[i] = (x, y, self.texts[i][2])
 
     def render(self, counter):
         super().render(counter)
