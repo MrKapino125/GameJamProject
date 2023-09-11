@@ -2537,3 +2537,87 @@ class AlphabettypeCard(Card):
             self.screen.blit(self.hide_surface, (self.alpha_data[key][0], self.alpha_data[key][1]))
         if self.end:
             return
+
+class RandomCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/random_card.png", screen, eventHandler, timer)
+        self.texts = [(538, 410), (735, 410), (832, 410)]
+        self.buttons = [(530, 650), (730, 650), (930, 650)]
+        self.checks = [False, False, False]
+        self.txtfont = pygame.font.SysFont("segoescript", 60)
+        self.numfont = pygame.font.SysFont("segoescript", 36)
+        self.hover_surface = pygame.Surface((100, 75))
+        self.hover_surface.set_alpha(30)
+        self.hover_surface.set_colorkey((255, 255, 255))
+        self.starttime = 0
+
+    def tick(self):
+        super().tick()
+        if self.end:
+            return
+        mousePos = self.eventHandler.mousePos
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
+            self.eventHandler.is_lockedc["left"] = True
+            if self.buttons[0][0] <= mousePos[0] <= self.buttons[0][0] + 100:
+                if self.buttons[0][1] <= mousePos[1] <= self.buttons[0][1] + 75:
+                    self.checks[0] = True
+            if self.buttons[1][0] <= mousePos[0] <= self.buttons[1][0] + 100:
+                if self.buttons[1][1] <= mousePos[1] <= self.buttons[1][1] + 75:
+                    if self.checks[0]:
+                        self.checks[1] = True
+                    else:
+                        self.checks = [False, False, False]
+                        return False
+            if self.buttons[2][0] <= mousePos[0] <= self.buttons[2][0] + 100:
+                if self.buttons[2][1] <= mousePos[1] <= self.buttons[2][1] + 75:
+                    if self.checks[0] and self.checks[1]:
+                        self.checks[2] = True
+                    else:
+                        self.checks = [False, False, False]
+                        return False
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
+
+        if all(self.checks):
+            self.done()
+            return True
+
+        if self.timer.time - self.starttime > 0.6:
+            self.starttime = self.timer.time
+            for i in range(3):
+                x = random.randint(349, 1141)
+                y = random.randint(340, 716)
+                while (-100 <= self.buttons[0][0] - x <= 100 and -75 <= self.buttons[0][1] - y <= 75) or (-100 <= self.buttons[1][0] - x <= 100 and -75 <= self.buttons[1][1] - y <= 75):
+                    x = random.randint(349, 1141)
+                    y = random.randint(340, 716)
+                self.buttons[i] = (x, y)
+            for i in range(3):
+                x = random.randint(349, 1051)
+                y = random.randint(340, 731)
+                self.texts[i] = (x, y)
+
+    def render(self, counter):
+        super().render(counter)
+        if self.end:
+            return
+        click_txt = self.txtfont.render("Click", True, "Red")
+        self.screen.blit(click_txt, (self.texts[0][0], self.texts[0][1]))
+        in_txt = self.txtfont.render("in", True, "Red")
+        self.screen.blit(in_txt, (self.texts[1][0], self.texts[1][1]))
+        order_txt = self.txtfont.render("Order", True, "Red")
+        self.screen.blit(order_txt, (self.texts[2][0], self.texts[2][1]))
+
+        for i in range(3):
+            button = pygame.image.load("res/button_small.png")
+            self.screen.blit(button, (self.buttons[i][0], self.buttons[i][1]))
+            number = self.numfont.render(str(i + 1), True, "Red")
+            self.screen.blit(number, (self.buttons[i][0] + 36, self.buttons[i][1] + 10))
+
+        mousePos = self.eventHandler.mousePos
+        for pos in range(3):
+            if self.buttons[pos][0] <= mousePos[0] <= self.buttons[pos][0] + 100:
+                if self.buttons[pos][1] <= mousePos[1] <= self.buttons[pos][1] + 75:
+                    self.screen.blit(self.hover_surface, (self.buttons[pos][0], self.buttons[pos][1]))
+        for i in range(3):
+            if self.checks[i]:
+                self.screen.blit(self.hover_surface, (self.buttons[i][0], self.buttons[i][1]))
