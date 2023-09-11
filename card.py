@@ -2257,6 +2257,7 @@ class OsuCard(Card):
                     break
 
 
+
     def render(self, counter):
         super().render(counter)
         if self.end:
@@ -2318,7 +2319,6 @@ class WordleCard(Card):
         if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
             self.eventHandler.is_lockedc["left"] = True
             mousePos = self.eventHandler.mousePos
-            print(mousePos)
             if 330 <= mousePos[0] <= 592 and 522 <= mousePos[1] <= 610:
                 self.current = 0
             if 665 <= mousePos[0] <= 927 and 522 <= mousePos[1] <= 610:
@@ -2418,17 +2418,17 @@ class BallCard(Card):
         super().tick()
         self.ball[0] += self.move_x
         self.ball[1] += self.move_y
-        if self.end:
-            return
         if self.ball[0] > 1120:
             self.move_x = -6
         if self.ball[0] < 480:
             self.move_x = 6
-        mousePos = self.eventHandler.mousePos
-        if self.eventHandler.is_clicked["left"] and self.ball_state == 0:
+        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"] and self.ball_state == 0:
+            self.eventHandler.is_lockedc["left"] = True
             self.move_x = 0
             self.ball_state = 1
             self.starttime = self.timer.time
+        if not self.eventHandler.is_clicked["left"]:
+            self.eventHandler.is_lockedc["left"] = False
         if self.ball_state == 1:
             self.move_y = (self.timer.time - self.starttime) * 25
         if self.ball[1] > 673:
@@ -2456,6 +2456,8 @@ class BallCard(Card):
                 self.move_y = 0
                 self.ball = [self.middle[0] - 50, self.middle[1] - 131]
                 return False
+        if self.end:
+            return
         if all(self.cups):
             self.done()
             return True
@@ -2471,3 +2473,67 @@ class BallCard(Card):
         if self.end:
             return
         pygame.draw.circle(self.screen, "Green", self.ball, 29)
+
+class AlphabettypeCard(Card):
+    def __init__(self, screen, eventHandler, timer):
+        super().__init__("res/alphabettype_card.png", screen, eventHandler, timer)
+        self.hide_surface = pygame.Surface((50, 50))
+        self.hide_surface.fill((255, 236, 177))
+        self.alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+        self.alpha_data = {
+            "a": [961, 388],
+            "b": [648, 612],
+            "c": [339, 687],
+            "d": [900, 457],
+            "e": [742, 656],
+            "f": [753, 432],
+            "g": [1083, 592],
+            "h": [545, 676],
+            "i": [1210, 411],
+            "j": [507, 585],
+            "k": [1117, 692],
+            "l": [332, 401],
+            "m": [894, 711],
+            "n": [323, 600],
+            "o": [494, 361],
+            "p": [869, 362],
+            "q": [651, 716],
+            "r": [583, 410],
+            "s": [1216, 601],
+            "t": [436, 692],
+            "u": [1065, 450],
+            "v": [693, 356],
+            "w": [840, 612],
+            "x": [425, 424],
+            "y": [1117, 376],
+            "z": [990, 648]
+        }
+        self.count = 25
+    def tick(self):
+        super().tick()
+        mousePos = self.eventHandler.mousePos
+        if self.eventHandler.is_clicked["left"]:
+            print(mousePos)
+        for i in range(26):
+            if self.eventHandler.is_pressed[self.alphabet[i]] and not self.eventHandler.is_lockedp[self.alphabet[i]]:
+                self.eventHandler.is_lockedp[self.alphabet[i]] = True
+                if i != self.count:
+                    self.count = 25
+                    return False
+                else:
+                    self.count -= 1
+            if not self.eventHandler.is_pressed[self.alphabet[i]]:
+                self.eventHandler.is_lockedp[self.alphabet[i]] = False
+        if self.end:
+            return
+        if self.count < 0:
+            self.done()
+            return True
+
+
+    def render(self, counter):
+        super().render(counter)
+        for key in self.alphabet[:self.count + 1]:
+            self.screen.blit(self.hide_surface, (self.alpha_data[key][0], self.alpha_data[key][1]))
+        if self.end:
+            return
