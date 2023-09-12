@@ -2506,9 +2506,6 @@ class AlphabettypeCard(Card):
         super().tick()
         if self.end:
             return
-        mousePos = self.eventHandler.mousePos
-        if self.eventHandler.is_clicked["left"]:
-            print(mousePos)
         for i in range(26):
             if self.eventHandler.is_pressed[self.alphabet[i]] and not self.eventHandler.is_lockedp[self.alphabet[i]]:
                 self.eventHandler.is_lockedp[self.alphabet[i]] = True
