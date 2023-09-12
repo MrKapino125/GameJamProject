@@ -292,12 +292,6 @@ class MinefieldCard(Card):
         if self.end:
             return
 
-        if self.eventHandler.is_clicked["left"] and not self.eventHandler.is_lockedc["left"]:
-            self.eventHandler.is_lockedc["left"] = True
-            print(self.eventHandler.mousePos)
-        if not self.eventHandler.is_clicked["left"]:
-            self.eventHandler.is_lockedc["left"] = False
-
         if self.eventHandler.is_pressed["w"] and not self.eventHandler.is_lockedp["w"]:
             self.eventHandler.is_lockedp["w"] = True
             if self.player_pos[0] > 0:
