@@ -157,7 +157,7 @@ class GameState(State):
         self.started = False
 
         self.cards_left = self.cardLoader.loadcard(-1, self.screen, self.eventHandler, self.timer)
-        self.current_card = self.cardLoader.loadcard(38, self.screen, self.eventHandler, self.timer)
+        self.current_card = self.cardLoader.loadcard(0, self.screen, self.eventHandler, self.timer)
         self.next_card = self.cardLoader.loadcard(1, self.screen, self.eventHandler, self.timer)
         self.holding_card = None
         self.cardcounter = 1

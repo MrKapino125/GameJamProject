@@ -879,7 +879,7 @@ class AlphabetCard(Card):
                 else:
                     time = str(int(time * 10) / 10)
                 timetxt = pygame.font.SysFont("segoescript", 75).render(time, True, "Red")
-                cards_lefttxt = pygame.font.SysFont("segoescript", 75).render(str(31 - counter), True, "Red")
+                cards_lefttxt = pygame.font.SysFont("segoescript", 75).render(str(40 - counter), True, "Red")
                 self.screen.blit(timetxt, (400, 75))
                 if 31 - counter < 10:
                     self.screen.blit(cards_lefttxt, (1150, 75))
@@ -2271,6 +2271,7 @@ class OsuCard(Card):
 class WordleCard(Card):
     def __init__(self, screen, eventHandler, timer):
         super().__init__("res/wordle_card0.png", screen, eventHandler, timer)
+        self.images = [pygame.image.load("res/wordle_card0.png"), pygame.image.load("res/wordle_card1.png"), pygame.image.load("res/wordle_card2.png")]
         self.words = ["", "", ""]
         self.color = ["Black", "Black", "Black"]
         self.check = [False, False, False]
@@ -2363,6 +2364,7 @@ class WordleCard(Card):
                             break
                     else:
                         self.check[i] = True
+                        self.color[i] = "Black"
             else:
                 self.color[i] = "Black"
 
@@ -2374,16 +2376,13 @@ class WordleCard(Card):
     def render(self, counter):
         super().render(counter)
         if self.current == 0:
-            card = pygame.image.load("res/wordle_card0.png")
-            self.screen.blit(card, self.pos)
+            self.screen.blit(self.images[0], self.pos)
             self.drawNumber(counter)
         elif self.current == 1:
-            card = pygame.image.load("res/wordle_card1.png")
-            self.screen.blit(card, self.pos)
+            self.screen.blit(self.images[1], self.pos)
             self.drawNumber(counter)
         else:
-            card = pygame.image.load("res/wordle_card2.png")
-            self.screen.blit(card, self.pos)
+            self.screen.blit(self.images[2], self.pos)
             self.drawNumber(counter)
 
         word0 = self.font.render(self.words[0].upper(), True, self.color[0])
@@ -2416,6 +2415,8 @@ class BallCard(Card):
 
     def tick(self):
         super().tick()
+        if self.end:
+            return
         self.ball[0] += self.move_x
         self.ball[1] += self.move_y
         if self.ball[0] > 1120:
@@ -2456,8 +2457,6 @@ class BallCard(Card):
                 self.move_y = 0
                 self.ball = [self.middle[0] - 50, self.middle[1] - 131]
                 return False
-        if self.end:
-            return
         if all(self.cups):
             self.done()
             return True
@@ -2511,6 +2510,8 @@ class AlphabettypeCard(Card):
         self.count = 25
     def tick(self):
         super().tick()
+        if self.end:
+            return
         mousePos = self.eventHandler.mousePos
         if self.eventHandler.is_clicked["left"]:
             print(mousePos)
@@ -2518,14 +2519,11 @@ class AlphabettypeCard(Card):
             if self.eventHandler.is_pressed[self.alphabet[i]] and not self.eventHandler.is_lockedp[self.alphabet[i]]:
                 self.eventHandler.is_lockedp[self.alphabet[i]] = True
                 if i != self.count:
-                    self.count = 25
                     return False
                 else:
                     self.count -= 1
             if not self.eventHandler.is_pressed[self.alphabet[i]]:
                 self.eventHandler.is_lockedp[self.alphabet[i]] = False
-        if self.end:
-            return
         if self.count < 0:
             self.done()
             return True
@@ -2592,7 +2590,7 @@ class RandomCard(Card):
                     y = random.randint(340, 716)
                 self.buttons[i] = (x, y)
             for i in range(3):
-                x = random.randint(349, 1051)
+                x = random.randint(349, 1241 - self.texts[i][2])
                 y = random.randint(340, 731)
                 while (-100 <= self.buttons[0][0] - x <= self.texts[i][2] and -75 <= self.buttons[0][1] - y <= 50) or (-100 <= self.buttons[1][0] - x <= self.texts[i][2] and -75 <= self.buttons[1][1] - y <= 50) or (-100 <= self.buttons[2][0] - x <= self.texts[i][2] and -75 <= self.buttons[2][1] - y <= 50) or (-172 <= self.texts[0][0] - x <= self.texts[i][2] and -50 <= self.texts[0][1] - y <= 50) or (-73 <= self.texts[1][0] - x <= self.texts[i][2] and -50 <= self.texts[1][1] - y <= 50) or (-190 <= self.texts[2][0] - x <= self.texts[i][2] and -50 <= self.texts[2][1] - y <= 50):
                     x = random.randint(349, 1241 - self.texts[i][2])
